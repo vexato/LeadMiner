@@ -1,6 +1,44 @@
-linkedin_session.json
-./results
+# Claude Code
+.claude/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Results / output files
+results/
+
+# Playwright browsers
+playwright/
+
+# Environment variables
 .env
-.venv
-.claude
-log.txt
+.env.*
+!.env.example
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Jupyter
+.ipynb_checkpoints/

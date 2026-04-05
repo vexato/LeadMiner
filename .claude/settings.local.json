@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(for d:*)",
+      "Bash(do)",
+      "Bash(touch \"/c/Users/gabriel/Desktop/internship/$d/__init__.py\")",
+      "Bash(done)"
+    ]
+  }
+}
