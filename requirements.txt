@@ -1,0 +1,14 @@
+# Core scraping — Google Maps source
+playwright>=1.40.0
+aiohttp>=3.9.0
+
+# HTML parsing
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# Data export
+pandas>=2.1.0
+
+# HTTP fallback (available for future scrapers)
+requests>=2.31.0
+

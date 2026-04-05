@@ -1,0 +1,304 @@
+(.venv) PS C:\Users\gabriel\Desktop\internship> python main.py -q "agence developpement web et logiciels" -l "Bordeaux" --source maps,pj,google --verbose
+16:17:13 | INFO     | core.orchestrator | Pipeline start — query='agence developpement web et logiciels' location='Bordeaux' limit=20 sources=['maps', 'pj', 'google']
+16:17:13 | INFO     | core.orchestrator | Pipeline start — query='agence developpement web et logiciels' location='Bordeaux' limit=20 sources=['maps', 'pj', 'google']
+16:17:13 | INFO     | core.orchestrator | [1/7] Running 3 source(s)…
+16:17:13 | INFO     | core.orchestrator | [1/7] Running 3 source(s)…
+16:17:13 | INFO     | scrapers.google_maps_scraper | Google Maps search: 'agence developpement web et logiciels Bordeaux' (limit=20)
+16:17:13 | INFO     | scrapers.google_maps_scraper | Google Maps search: 'agence developpement web et logiciels Bordeaux' (limit=20)
+16:17:15 | DEBUG    | scrapers.google_maps_scraper | Consent overlay dismissed
+16:17:16 | DEBUG    | scrapers.google_maps_scraper |   Scroll 1/16: +8 new  (total 8/20)
+16:17:18 | DEBUG    | scrapers.google_maps_scraper |   Scroll 2/16: +0 new  (total 8/20)
+16:17:20 | DEBUG    | scrapers.google_maps_scraper |   Scroll 3/16: +8 new  (total 16/20)
+16:17:22 | DEBUG    | scrapers.google_maps_scraper |   Scroll 4/16: +0 new  (total 16/20)
+16:17:24 | DEBUG    | scrapers.google_maps_scraper |   Scroll 5/16: +6 new  (total 22/20)
+16:17:24 | DEBUG    | scrapers.google_maps_scraper |   Limit reached — stopping scroll
+16:17:24 | INFO     | scrapers.google_maps_scraper | Collected 22 place URLs; visiting each…
+16:17:24 | INFO     | scrapers.google_maps_scraper | Collected 22 place URLs; visiting each…
+16:17:24 | DEBUG    | scrapers.google_maps_scraper |   [1/20] https://www.google.com/maps/place/Omnium/data=!4m7!3m6!1s0xd55297d02c504d1:0xc5880745e0e5aa17!8m2!3d44.8599315!4d-0.5549599!16s%2Fg%2F11swk4jkhh!19sChIJ0QTFAn0pVQ0RF6rl4EUHiMU?authuser=0&hl=fr&rclk=1
+16:17:29 | DEBUG    | scrapers.google_maps_scraper |   [2/20] https://www.google.com/maps/place/Kwantic/data=!4m7!3m6!1s0xd5527d9284bffff:0xede811348a3afa41!8m2!3d44.8393678!4d-0.585531!16s%2Fg%2F11hcw78f3g!19sChIJ__9LKNknVQ0RQfo6ijQR6O0?authuser=0&hl=fr&rclk=1
+16:17:33 | DEBUG    | scrapers.google_maps_scraper |   [3/20] https://www.google.com/maps/place/Agence+Script+-+D%C3%A9veloppement+web/data=!4m7!3m6!1s0xd55278c765cad05:0xe891a8b0fcfe5ef8!8m2!3d44.8488305!4d-0.5709771!16s%2Fg%2F11ltpwv7xf!19sChIJBa1cdownVQ0R-F7-_LCokeg?authuser=0&hl=fr&rclk=1
+16:17:36 | DEBUG    | scrapers.google_maps_scraper |   [4/20] https://www.google.com/maps/place/Dandi+cr%C3%A9ation+site+internet+Bordeaux/data=!4m7!3m6!1s0xd552700345a0751:0xcf53205f6ad7809d!8m2!3d44.8382507!4d-0.5693085!16s%2Fg%2F11wc1w9_5w!19sChIJUQdaNAAnVQ0RnYDXal8gU88?authuser=0&hl=fr&rclk=1
+16:17:40 | DEBUG    | scrapers.google_maps_scraper |   [5/20] https://www.google.com/maps/place/Appalga/data=!4m7!3m6!1s0xd55262b5e6ae1ef:0xd901448a1a5ddee3!8m2!3d44.84308!4d-0.5775793!16s%2Fg%2F11c6w05mjh!19sChIJ7-FqXismVQ0R495dGopEAdk?authuser=0&hl=fr&rclk=1
+16:17:44 | DEBUG    | scrapers.google_maps_scraper |   [6/20] https://www.google.com/maps/place/ORBITEO/data=!4m7!3m6!1s0xd5527ffbbc6843d:0x12fdd5e2e76f6114!8m2!3d44.8477076!4d-0.5741965!16s%2Fg%2F11b7ys_9dn!19sChIJPYTGu_8nVQ0RFGFv5-LV_RI?authuser=0&hl=fr&rclk=1
+16:17:48 | DEBUG    | scrapers.google_maps_scraper |   [7/20] https://www.google.com/maps/place/Ethiko/data=!4m7!3m6!1s0xd552748b30a3325:0x1bf96c2b1461a682!8m2!3d44.8411375!4d-0.5861411!16s%2Fg%2F11l_c5cvh6!19sChIJJTMKs0gnVQ0RgqZhFCts-Rs?authuser=0&hl=fr&rclk=1
+16:17:51 | DEBUG    | scrapers.google_maps_scraper |   [8/20] https://www.google.com/maps/place/id%C3%A9veloppement/data=!4m7!3m6!1s0xd5529bc67dcd417:0xb2b64f27b1a9bffb!8m2!3d44.8501361!4d-0.5745882!16s%2Fg%2F11hf1h68gb!19sChIJF9TcZ7wpVQ0R-7-psSdPtrI?authuser=0&hl=fr&rclk=1
+16:17:55 | DEBUG    | scrapers.google_maps_scraper |   [9/20] https://www.google.com/maps/place/Webdevo/data=!4m7!3m6!1s0xd5527fcfc431147:0x2758bb6943b5ab02!8m2!3d44.8461771!4d-0.5754967!16s%2Fg%2F11wr0895yd!19sChIJRxFD_PwnVQ0RAqu1Q2m7WCc?authuser=0&hl=fr&rclk=1
+16:17:59 | DEBUG    | scrapers.google_maps_scraper |   [10/20] https://www.google.com/maps/place/Coh%C3%A9rence+-+Agence+Digitale+%7C+Bordeaux/data=!4m7!3m6!1s0xd552921ec260f3b:0xb6b1788342b0cc56!8m2!3d44.87819!4d-0.581981!16s%2Fg%2F11vhzz83s3!19sChIJOw8m7CEpVQ0RVsywQoN4sbY?authuser=0&hl=fr&rclk=1
+16:18:03 | DEBUG    | scrapers.google_maps_scraper |   [11/20] https://www.google.com/maps/place/Creation+De+Site+Web/data=!4m7!3m6!1s0xd54d96bfaff1e41:0xf29af291638a580f!8m2!3d44.8216514!4d-0.6081928!16s%2Fg%2F11xh2m1n18!19sChIJQR7_-mvZVA0RD1iKY5HymvI?authuser=0&hl=fr&rclk=1
+16:18:06 | DEBUG    | scrapers.google_maps_scraper |   [12/20] https://www.google.com/maps/place/Urban+Linker+Bordeaux+-+Cabinet+de+recrutement/data=!4m7!3m6!1s0xd54d9ed366cd2b1:0xfdfefcf0a90f8f60!8m2!3d44.842552!4d-0.581038!16s%2Fg%2F11rr2yvy9n!19sChIJsdJsNu3ZVA0RYI8PqfD8_v0?authuser=0&hl=fr&rclk=1
+16:18:09 | DEBUG    | scrapers.google_maps_scraper |   [13/20] https://www.google.com/maps/place/Davelopweb+-+Agence+digitale+Web/data=!4m7!3m6!1s0xd54d827d15f0d8b:0x16eae5a08c61845f!8m2!3d44.8668428!4d-0.6378644!16s%2Fg%2F1ptyj7tx_!19sChIJiw1f0SfYVA0RX4RhjKDl6hY?authuser=0&hl=fr&rclk=1
+16:18:13 | DEBUG    | scrapers.google_maps_scraper |   [14/20] https://www.google.com/maps/place/Sodium+Digital/data=!4m7!3m6!1s0xd5527ea3d0fd6b3:0xe949a3b5dfc6406a!8m2!3d44.8210084!4d-0.5758254!16s%2Fg%2F12j3l75h5!19sChIJs9YPPeonVQ0RakDG37WjSek?authuser=0&hl=fr&rclk=1
+16:18:16 | DEBUG    | scrapers.google_maps_scraper |   [15/20] https://www.google.com/maps/place/Cr%C3%A9aSites+Sud-Ouest/data=!4m7!3m6!1s0xd55280c7ce5a70d:0xc2790c903f54a6a6!8m2!3d44.8539952!4d-0.5850846!16s%2Fg%2F11bwf7dng6!19sChIJDaflfAwoVQ0RpqZUP5AMecI?authuser=0&hl=fr&rclk=1
+16:18:20 | DEBUG    | scrapers.google_maps_scraper |   [16/20] https://www.google.com/maps/place/Snapp%27+-+Expert+en+d%C3%A9veloppement+mobile+et+web/data=!4m7!3m6!1s0xd55284633bf293d:0x4135346a762350d9!8m2!3d44.8411954!4d-0.585531!16s%2Fg%2F11h0z34rr!19sChIJPSm_M0YoVQ0R2VAjdmo0NUE?authuser=0&hl=fr&rclk=1
+16:18:24 | DEBUG    | scrapers.google_maps_scraper |   [17/20] https://www.google.com/maps/place/Le+Site+Fran%C3%A7ais/data=!4m7!3m6!1s0xd5527c6e628f04d:0x175fb7d6530ddb48!8m2!3d44.8477076!4d-0.5741965!16s%2Fg%2F11h4hvctv3!19sChIJTfAo5sYnVQ0RSNsNU9a3Xxc?authuser=0&hl=fr&rclk=1
+16:18:28 | DEBUG    | scrapers.google_maps_scraper |   [18/20] https://www.google.com/maps/place/Inflexsys+-+Entreprise+de+Services+du+Num%C3%A9rique/data=!4m7!3m6!1s0xd54da1e7618eda5:0xb95b16a99069e9d3!8m2!3d44.854566!4d-0.683815!16s%2Fg%2F1hc20gw5w!19sChIJpe0Ydh7aVA0R0-lpkKkWW7k?authuser=0&hl=fr&rclk=1
+16:18:32 | DEBUG    | scrapers.google_maps_scraper |   [19/20] https://www.google.com/maps/place/Agence+GW+-+Agence+web+%C3%A0+Bordeaux+labellis%C3%A9e+NR/data=!4m7!3m6!1s0xd552658582a75b1:0x65662eaf25b004c2!8m2!3d44.8474659!4d-0.5719805!16s%2Fg%2F12hnxrw9x!19sChIJsXUqWFgmVQ0RwgSwJa8uZmU?authuser=0&hl=fr&rclk=1
+16:18:36 | DEBUG    | scrapers.google_maps_scraper |   [20/20] https://www.google.com/maps/place/Samuel+Dupe/data=!4m7!3m6!1s0xd552fc611be500b:0xc150844636be9e7c!8m2!3d44.8540393!4d-0.5158364!16s%2Fg%2F11gtz6bn0j!19sChIJC1C-EcYvVQ0RfJ6-NkaEUME?authuser=0&hl=fr&rclk=1
+16:18:40 | INFO     | scrapers.google_maps_scraper | Google Maps: extracted 20 companies
+16:18:40 | INFO     | scrapers.google_maps_scraper | Google Maps: extracted 20 companies
+16:18:40 | INFO     | core.orchestrator |   [google_maps] → 20 companies
+16:18:40 | INFO     | core.orchestrator |   [google_maps] → 20 companies
+16:18:40 | INFO     | scrapers.pages_jaunes_scraper | Pages Jaunes search: 'agence developpement web et logiciels' in 'Bordeaux' (limit=20)
+16:18:40 | INFO     | scrapers.pages_jaunes_scraper | Pages Jaunes search: 'agence developpement web et logiciels' in 'Bordeaux' (limit=20)
+16:18:57 | INFO     | scrapers.pages_jaunes_scraper | PJ: no result cards found on page 1 — stopping
+16:18:57 | INFO     | scrapers.pages_jaunes_scraper | PJ: no result cards found on page 1 — stopping
+16:18:57 | INFO     | scrapers.pages_jaunes_scraper | Pages Jaunes: 0 companies found
+16:18:57 | INFO     | scrapers.pages_jaunes_scraper | Pages Jaunes: 0 companies found
+16:18:57 | INFO     | core.orchestrator |   [pj] → 0 companies
+16:18:57 | INFO     | core.orchestrator |   [pj] → 0 companies
+16:18:57 | INFO     | scrapers.google_search_scraper | Google Search: 'agence developpement web et logiciels Bordeaux' (limit=20)
+16:18:57 | INFO     | scrapers.google_search_scraper | Google Search: 'agence developpement web et logiciels Bordeaux' (limit=20)
+16:19:00 | DEBUG    | scrapers.google_search_scraper | Google Search: no results on page 1
+16:19:00 | INFO     | scrapers.google_search_scraper | Google Search: 0 companies found
+16:19:00 | INFO     | scrapers.google_search_scraper | Google Search: 0 companies found
+16:19:00 | INFO     | core.orchestrator |   [google] → 0 companies
+16:19:00 | INFO     | core.orchestrator |   [google] → 0 companies
+16:19:00 | DEBUG    | utils.deduplicator | Deduplicator: 20 → 20 companies (0 merged)
+16:19:00 | INFO     | core.orchestrator | [2/7] Deduplicated: 20 → 20 unique companies
+16:19:00 | INFO     | core.orchestrator | [2/7] Deduplicated: 20 → 20 unique companies
+16:19:00 | INFO     | core.orchestrator | [3/7] Enriching companies via their websites…
+16:19:00 | INFO     | core.orchestrator | [3/7] Enriching companies via their websites…
+16:19:00 | DEBUG    | core.pipeline | Enriching: Omnium (https://omnium-digital.fr/)
+16:19:00 | DEBUG    | core.pipeline | Enriching: Kwantic (https://kwantic.fr/)
+16:19:00 | DEBUG    | core.pipeline | Enriching: Agence Script - Développement web (https://www.agence-script.com/)
+16:19:00 | DEBUG    | core.pipeline | Enriching: Dandi création site internet Bordeaux (https://www.dandi.fr/agences/agence-creation-site-bordeaux)
+16:19:00 | DEBUG    | core.pipeline | Enriching: Appalga (https://www.appalga.com/)
+16:19:01 | DEBUG    | scrapers.website_scraper | Contact page found: https://www.agence-script.com/contact
+16:19:01 | DEBUG    | extractors.email_extractor | Found email: contact@agence-script.com
+16:19:01 | DEBUG    | core.pipeline | Enriching: ORBITEO (https://orbiteo.com/)
+16:19:01 | DEBUG    | scrapers.website_scraper | Contact page found: https://www.appalga.com/contact
+16:19:01 | DEBUG    | extractors.email_extractor | Found email: contact@appalga.com
+16:19:01 | DEBUG    | core.pipeline | Enriching: Ethiko (https://ethiko.org/?utm_source=google_my_business&utm_medium=organic&utm_content=bouton_site_web)
+16:19:01 | DEBUG    | scrapers.website_scraper | Contact page found: https://omnium-digital.fr/contact
+16:19:01 | DEBUG    | extractors.email_extractor | Found email: bonjour@omnium-digital.fr
+16:19:01 | DEBUG    | core.pipeline | Enriching: idéveloppement (http://www.ideveloppement.fr/)
+16:19:02 | DEBUG    | scrapers.website_scraper | HTTP 404: http://www.ideveloppement.fr/contact
+16:19:02 | DEBUG    | scrapers.website_scraper | Contact page found: https://www.dandi.fr/contact
+16:19:02 | DEBUG    | extractors.email_extractor | Found email: contact@dandi.fr
+16:19:02 | DEBUG    | core.pipeline | Enriching: Webdevo (http://webdevo.fr/)
+16:19:02 | DEBUG    | scrapers.website_scraper | Contact page found: https://kwantic.fr/contact
+16:19:02 | DEBUG    | extractors.email_extractor | Found email: contact@kwantic.fr
+16:19:02 | DEBUG    | core.pipeline | Enriching: Cohérence - Agence Digitale | Bordeaux (https://www.coherence-communication.fr/)
+16:19:03 | DEBUG    | scrapers.website_scraper | Contact page found: https://orbiteo.com/contact
+16:19:03 | DEBUG    | core.pipeline | Enriching: Creation De Site Web (https://creation-site-web-france.fr/)
+16:19:03 | DEBUG    | scrapers.website_scraper | HTTP 404: http://webdevo.fr/contact
+16:19:03 | DEBUG    | scrapers.website_scraper | HTTP 404: http://www.ideveloppement.fr/contact-us
+16:19:04 | DEBUG    | scrapers.website_scraper | Contact page found: https://creation-site-web-france.fr/contact
+16:19:04 | DEBUG    | core.pipeline | Enriching: Urban Linker Bordeaux - Cabinet de recrutement (http://urbanlinker.com/)
+16:19:04 | DEBUG    | scrapers.website_scraper | HTTP 404: http://www.ideveloppement.fr/nous-contacter
+16:19:05 | DEBUG    | scrapers.website_scraper | Contact page found: https://www.coherence-communication.fr/contact
+16:19:05 | DEBUG    | extractors.email_extractor | Found email: support@agence-coherence.fr
+16:19:05 | DEBUG    | core.pipeline | Enriching: Davelopweb - Agence digitale Web (https://davelopweb.fr/)
+16:19:05 | DEBUG    | scrapers.website_scraper | HTTP 404: http://webdevo.fr/contact-us
+16:19:06 | DEBUG    | scrapers.website_scraper | HTTP 404: http://www.ideveloppement.fr/about
+16:19:06 | DEBUG    | scrapers.website_scraper | Contact page found: http://urbanlinker.com/contact
+16:19:06 | DEBUG    | core.pipeline | Enriching: Sodium Digital (https://sodium.digital/)
+16:19:06 | DEBUG    | scrapers.website_scraper | HTTP 404: https://ethiko.org/contact
+16:19:06 | DEBUG    | scrapers.website_scraper | HTTP 404: http://webdevo.fr/nous-contacter
+16:19:07 | DEBUG    | scrapers.website_scraper | HTTP 404: https://davelopweb.fr/contact
+16:19:07 | DEBUG    | scrapers.website_scraper | Contact page found: https://sodium.digital/contact
+16:19:07 | DEBUG    | extractors.email_extractor | Found email: gdardier@sodium.digital
+16:19:07 | DEBUG    | core.pipeline | Enriching: CréaSites Sud-Ouest (https://www.creation-sites-internet-bordeaux.fr/)
+16:19:07 | DEBUG    | scrapers.website_scraper | HTTP 404: http://webdevo.fr/about
+16:19:07 | DEBUG    | scrapers.website_scraper | HTTP 404: http://www.ideveloppement.fr/a-propos
+16:19:08 | DEBUG    | scrapers.website_scraper | Contact page found: http://www.ideveloppement.fr/mentions-legales
+16:19:08 | DEBUG    | core.pipeline | Enriching: Snapp' - Expert en développement mobile et web (http://www.snapp.fr/)
+16:19:08 | DEBUG    | scrapers.website_scraper | HTTP 404: https://www.creation-sites-internet-bordeaux.fr/contact
+16:19:08 | DEBUG    | scrapers.website_scraper | HTTP 404: https://davelopweb.fr/contact-us
+16:19:08 | DEBUG    | scrapers.website_scraper | HTTP 404: http://webdevo.fr/a-propos
+16:19:09 | DEBUG    | scrapers.website_scraper | Contact page found: http://www.snapp.fr/contact
+16:19:09 | DEBUG    | extractors.email_extractor | Found email: contact@snapp.fr
+16:19:09 | DEBUG    | core.pipeline | Enriching: Le Site Français (https://le-site-francais.fr/)
+16:19:09 | DEBUG    | scrapers.website_scraper | HTTP 404: https://ethiko.org/contact-us
+16:19:09 | DEBUG    | scrapers.website_scraper | HTTP 404: https://www.creation-sites-internet-bordeaux.fr/contact-us
+16:19:10 | DEBUG    | scrapers.website_scraper | HTTP 404: https://www.creation-sites-internet-bordeaux.fr/nous-contacter
+16:19:10 | DEBUG    | scrapers.website_scraper | HTTP 404: https://davelopweb.fr/nous-contacter
+16:19:10 | DEBUG    | scrapers.website_scraper | Contact page found: http://webdevo.fr/mentions-legales
+16:19:10 | DEBUG    | extractors.email_extractor | Found email: contact@webdevo.fr
+16:19:10 | DEBUG    | core.pipeline | Enriching: Inflexsys - Entreprise de Services du Numérique (http://www.inflexsys.com/)
+16:19:11 | DEBUG    | scrapers.website_scraper | HTTP 404: https://davelopweb.fr/about
+16:19:11 | DEBUG    | scrapers.website_scraper | HTTP 404: https://www.creation-sites-internet-bordeaux.fr/about
+16:19:12 | DEBUG    | scrapers.website_scraper | HTTP 404: https://ethiko.org/nous-contacter
+16:19:12 | DEBUG    | scrapers.website_scraper | HTTP 404: https://www.creation-sites-internet-bordeaux.fr/a-propos
+16:19:12 | DEBUG    | scrapers.website_scraper | HTTP 404: https://davelopweb.fr/a-propos
+16:19:12 | DEBUG    | scrapers.website_scraper | Contact page found: http://www.inflexsys.com/contact
+16:19:12 | DEBUG    | extractors.email_extractor | Found email: contact@inflexsys.com
+16:19:12 | DEBUG    | extractors.email_extractor | Found email: contact@www.inflexsys.com
+16:19:12 | DEBUG    | core.pipeline | Enriching: Agence GW - Agence web à Bordeaux labellisée NR (https://www.agence-gw.com/)
+16:19:12 | DEBUG    | scrapers.website_scraper | Contact page found: https://le-site-francais.fr/contact
+16:19:12 | DEBUG    | extractors.email_extractor | Found email: bonjour@le-site-francais.fr
+16:19:12 | DEBUG    | core.pipeline | Enriching: Samuel Dupe (http://webmaster-gironde.fr/)
+16:19:13 | DEBUG    | scrapers.website_scraper | HTTP 404: https://www.creation-sites-internet-bordeaux.fr/mentions-legales
+16:19:13 | DEBUG    | scrapers.website_scraper | Contact page found: https://davelopweb.fr/mentions-legales
+16:19:13 | DEBUG    | extractors.email_extractor | Found email: contact@davelopweb.fr
+16:19:14 | DEBUG    | scrapers.website_scraper | Contact page found: https://www.agence-gw.com/contact
+16:19:14 | DEBUG    | extractors.email_extractor | Found email: contact@agence-gw.com
+16:19:14 | DEBUG    | scrapers.website_scraper | HTTP 404: https://www.creation-sites-internet-bordeaux.fr/legal
+16:19:15 | DEBUG    | scrapers.website_scraper | HTTP 404: https://ethiko.org/about
+16:19:15 | DEBUG    | scrapers.website_scraper | HTTP 404: https://www.creation-sites-internet-bordeaux.fr/coordonnees
+16:19:15 | DEBUG    | extractors.email_extractor | Found email: contact@site-internet.org
+16:19:15 | DEBUG    | extractors.email_extractor | Found email: info@site-internet.org
+16:19:18 | DEBUG    | scrapers.website_scraper | HTTP 404: https://ethiko.org/a-propos
+16:19:20 | DEBUG    | scrapers.website_scraper | Contact page found: http://webmaster-gironde.fr/contact
+16:19:20 | DEBUG    | extractors.email_extractor | Found email: webmaster.gironde@gmail.com
+16:19:20 | DEBUG    | scrapers.website_scraper | Contact page found: https://ethiko.org/mentions-legales
+16:19:20 | DEBUG    | extractors.email_extractor | Found email: contact@ethiko.org
+16:19:20 | INFO     | core.orchestrator | [3/7] 20 valid companies after enrichment
+16:19:20 | INFO     | core.orchestrator | [3/7] 20 valid companies after enrichment
+16:19:20 | INFO     | core.orchestrator | [4/7] Quality scores assigned
+16:19:20 | INFO     | core.orchestrator | [4/7] Quality scores assigned
+16:19:20 | INFO     | core.orchestrator | [5/7] 20 companies after junk filter
+16:19:20 | INFO     | core.orchestrator | [5/7] 20 companies after junk filter
+16:19:20 | INFO     | core.orchestrator | [6/7] 20 companies after score filter, sorted by score
+16:19:20 | INFO     | core.orchestrator | [6/7] 20 companies after score filter, sorted by score
+16:19:20 | INFO     | core.orchestrator | [7/7] Exporting 20 companies…
+16:19:20 | INFO     | core.orchestrator | [7/7] Exporting 20 companies…
+16:19:20 | DEBUG    | output.exporter | JSON → results\maps_pj_google_agence_developpement_web_et_logiciels_bordeaux_20260405_161920.json (20 records)
+16:19:20 | DEBUG    | output.exporter | CSV  → results\maps_pj_google_agence_developpement_web_et_logiciels_bordeaux_20260405_161920.csv (20 records)
+16:19:20 | INFO     | core.orchestrator |   Saved → results\maps_pj_google_agence_developpement_web_et_logiciels_bordeaux_20260405_161920.json
+16:19:20 | INFO     | core.orchestrator |   Saved → results\maps_pj_google_agence_developpement_web_et_logiciels_bordeaux_20260405_161920.json
+16:19:20 | INFO     | core.orchestrator |   Saved → results\maps_pj_google_agence_developpement_web_et_logiciels_bordeaux_20260405_161920.csv
+16:19:20 | INFO     | core.orchestrator |   Saved → results\maps_pj_google_agence_developpement_web_et_logiciels_bordeaux_20260405_161920.csv
+16:19:20 | INFO     | core.orchestrator | Pipeline complete.
+16:19:20 | INFO     | core.orchestrator | Pipeline complete.
+
+────────────────────────────────────────────────────────────────
+  Found 20 companies
+────────────────────────────────────────────────────────────────
+
+  1. Omnium  [7/7]  (maps)
+     🌐  https://omnium-digital.fr/
+     ✉   bonjour@omnium-digital.fr
+     📍  76 Quai de Bacalan, 33300 Bordeaux
+     📋  https://omnium-digital.fr/contact
+     💬  Omnium vous aide à booster votre visibilité en ligne avec des solutions efficaces et personnalisées.…
+
+  2. Kwantic  [7/7]  (maps)
+     🌐  https://kwantic.fr/
+     ✉   contact@kwantic.fr
+     📍  74 Rue Georges Bonnac, 33000 Bordeaux
+     📋  https://kwantic.fr/contact
+     💬  Kwantic, agence de développement web à Bordeaux, vous accompagne dans la réalisation de votre site i…
+
+  3. Agence Script - Développement web  [7/7]  (maps)
+     🌐  https://www.agence-script.com/
+     ✉   contact@agence-script.com
+     📍  1 Cr Xavier Arnozan, 33000 Bordeaux
+     📋  https://www.agence-script.com/contact
+     💬  Agence digitale basée à Bordeaux et Paris. Nous développons vos sites web, applications et logiciels…
+
+  4. Dandi création site internet Bordeaux  [7/7]  (maps)
+     🌐  https://www.dandi.fr/agences/agence-creation-site-bordeaux
+     ✉   contact@dandi.fr
+     📍  6-3, Pl. du Palais, 33000 Bordeaux
+     📋  https://www.dandi.fr/contact
+     💬  Découvrez notre agence de création de site web à Bordeaux. Dandi n'est pas une agence ordinaire, mai…
+
+  5. Appalga  [7/7]  (maps)
+     🌐  https://www.appalga.com/
+     ✉   contact@appalga.com
+     📍  Pl. des Grands Hommes, 33000 Bordeaux
+     📋  https://www.appalga.com/contact
+     💬  Agence web à Bordeaux spécialisée en création de site internet, référencement SEO et communication 3…
+
+  6. Ethiko  [7/7]  (maps)
+     🌐  https://ethiko.org/?utm_source=google_my_business&utm_medium=organic&utm_content=bouton_site_web
+     ✉   contact@ethiko.org
+     📍  88 Rue Judaïque, 33000 Bordeaux
+     📋  https://ethiko.org/mentions-legales
+     💬  Ethiko, agence web à Bordeaux spécialisée en éco-conception, création de site internet, UX UI design…
+
+  7. Webdevo  [7/7]  (maps)
+     🌐  http://webdevo.fr/
+     ✉   contact@webdevo.fr
+     📍  16 Pl. des Quinconces, 33000 Bordeaux
+     📋  http://webdevo.fr/mentions-legales
+     💬  Création de site internet à Bordeaux : sites rapides, design moderne et base SEO propre pour générer…
+
+  8. Cohérence - Agence Digitale | Bordeaux  [7/7]  (maps)
+     🌐  https://www.coherence-communication.fr/
+     ✉   support@agence-coherence.fr
+     📍  9 Av. Raymond Manaud, 33520 Bruges
+     📋  https://www.coherence-communication.fr/contact
+     💬  Cohérence, votre agence digitale vous aide à améliorer votre visibilité en ligne et à développer vot…
+
+  9. Davelopweb - Agence digitale Web  [7/7]  (maps)
+     🌐  https://davelopweb.fr/
+     ✉   contact@davelopweb.fr
+     📍  161 Av. de l'Hippodrome, 33320 Eysines
+     📋  https://davelopweb.fr/mentions-legales
+     💬  Notre agence digitale accompagne votre transformation numérique en garantissant votre souveraineté d…
+
+ 10. Sodium Digital  [7/7]  (maps)
+     🌐  https://sodium.digital/
+     ✉   gdardier@sodium.digital
+     📍  63 Rue Monsarrat, 33800 Bordeaux
+     📋  https://sodium.digital/contact
+     💬  Agence Digitale Bordeaux - Développement de sites web & applications métiers, Communication Digitale…
+
+ 11. Snapp' - Expert en développement mobile et web  [7/7]  (maps)
+     🌐  http://www.snapp.fr/
+     ✉   contact@snapp.fr
+     📍  78 Rue Judaïque, 33000 Bordeaux
+     📋  http://www.snapp.fr/contact
+     💬  Snapp’ est spécialisé dans le développement de projets web et mobile sur mesure depuis plus de 15 an…
+
+ 12. Le Site Français  [7/7]  (maps)
+     🌐  https://le-site-francais.fr/
+     ✉   bonjour@le-site-francais.fr
+     📍  9 Rue Vauban, 33000 Bordeaux
+     📋  https://le-site-francais.fr/contact
+     💬  Chez le Site Français, nous créons des Sites Internet pour les professionnels et nous le faisons bie…
+
+ 13. Inflexsys - Entreprise de Services du Numérique  [7/7]  (maps)
+     🌐  http://www.inflexsys.com/
+     ✉   contact@inflexsys.com
+     📍  8 Av. de la Grande Semaine, 33700 Mérignac
+     📋  http://www.inflexsys.com/contact
+     💬  Inflexsys est une entreprise de services du numérique experte en conception, réalisation et architec…
+
+ 14. Agence GW - Agence web à Bordeaux labellisée NR  [7/7]  (maps)
+     🌐  https://www.agence-gw.com/
+     ✉   contact@agence-gw.com
+     📍  11 Allées de Chartres, 33000 Bordeaux
+     📋  https://www.agence-gw.com/contact
+     💬  Agence web à Bordeaux. ESN labellisée NR. Sites internet développés dans une démarche d'écoconceptio…
+
+ 15. Samuel Dupe  [7/7]  (maps)
+     🌐  http://webmaster-gironde.fr/
+     ✉   webmaster.gironde@gmail.com
+     📍  1 Rue Pétrus Rubens, 33150 Cenon
+     📋  http://webmaster-gironde.fr/contact
+     💬  Webmaster Bordeaux création de site internet en gironde. Site vitrine wordpress site e-commerce pres…
+
+ 16. CréaSites Sud-Ouest  [6/7]  (maps)
+     🌐  https://www.creation-sites-internet-bordeaux.fr/
+     ✉   contact@site-internet.org
+     📍  19 Rue du Paveil, 33000 Bordeaux
+     💬  Création de site internet Bordeaux et référencement Google ☎ 05 57 41 42 84. Créasites Sud-Ouest, vo…
+
+ 17. ORBITEO  [5/7]  (maps)
+     🌐  https://orbiteo.com/
+     📍  9 Rue Vauban, 33000 Bordeaux
+     📋  https://orbiteo.com/contact
+     💬  Vous cherchez LE partenaire pour faire décoller votre activité et réaliser votre transformation digi…
+
+ 18. idéveloppement  [5/7]  (maps)
+     🌐  http://www.ideveloppement.fr/
+     📍  88 Cr de Verdun, 33000 Bordeaux
+     📋  http://www.ideveloppement.fr/mentions-legales
+     💬  idéveloppement est une agence web spécialisée dans la création de solutions digitales : site interne…
+
+ 19. Creation De Site Web  [5/7]  (maps)
+     🌐  https://creation-site-web-france.fr/
+     📍  155 Rue de Bethmann, 33000 Bordeaux
+     📋  https://creation-site-web-france.fr/contact
+     💬  Web site created using create-react-app
+
+ 20. Urban Linker Bordeaux - Cabinet de recrutement  [5/7]  (maps)
+     🌐  http://urbanlinker.com/
+     📍  24 Rue Rolland, 33000 Bordeaux
+     📋  http://urbanlinker.com/contact
+     💬  LOADING
+
+────────────────────────────────────────────────────────────────
