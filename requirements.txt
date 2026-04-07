@@ -12,3 +12,7 @@ pandas>=2.1.0
 # HTTP fallback (available for future scrapers)
 requests>=2.31.0
 
+# AI relevance filter (--ai flag)
+groq
+python-dotenv
+

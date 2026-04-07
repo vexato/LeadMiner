@@ -10,9 +10,11 @@ Pipeline
   5. [Score]       Assign quality score to every record
   6. [Filter]      Junk domains, empty records, min-score  →  list[Company]
   7. [Sort]        Descending by score
-  8. [Export]      JSON / CSV                              →  files
+  8. [AI filter]   (optional, --ai) Groq relevance filter  →  kept / refused
+  9. [Export]      JSON / CSV                              →  files
 """
 
+from datetime import datetime
 from typing import Optional
 
 from config.settings import Settings
@@ -57,6 +59,7 @@ class Orchestrator:
         sources: Optional[list[str]] = None,
         output_format: Optional[str] = None,
         only: Optional[list[str]] = None,
+        ai: bool = False,
     ) -> list[Company]:
         """
         Execute the full pipeline.
@@ -69,6 +72,8 @@ class Orchestrator:
                            Available: maps, pj, google.
             output_format: Override settings output format.
             only:          Required-field filter (e.g. ["email", "contact"]).
+            ai:            Run the Groq relevance filter as a final stage
+                           and write refused companies to a separate file.
         """
         if output_format:
             self.settings.output_format = output_format
@@ -141,11 +146,38 @@ class Orchestrator:
         valid.sort(key=lambda c: c.score, reverse=True)
         logger.info(f"[6/7] {len(valid)} companies after score filter, sorted by score")
 
+        # ── Step 7b: AI relevance filter (opt-in via --ai) ────────────────────
+        refused: list[Company] = []
+        if ai:
+            from utils.ai_filter import AIFilterError, ai_filter as run_ai_filter
+
+            logger.info(f"[IA] Running AI relevance filter on {len(valid)} companies…")
+            try:
+                valid, refused = run_ai_filter(valid, query)
+            except AIFilterError as exc:
+                logger.error(f"[IA] Filter skipped: {exc}")
+
         # ── Step 8: export ────────────────────────────────────────────────────
         source_label = "_".join(active)
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        slug = f"{source_label}_{query}_{location}".lower().replace(" ", "_")
+        base = f"{slug}_{ts}"
+
         logger.info(f"[7/7] Exporting {len(valid)} companies…")
-        for path in self.exporter.export(valid, f"{source_label}_{query}", location):
+        for path in self.exporter.export(
+            valid, f"{source_label}_{query}", location, base_name=base
+        ):
             logger.info(f"  Saved → {path}")
+
+        if refused:
+            logger.info(f"[IA] Exporting {len(refused)} refused companies…")
+            for path in self.exporter.export(
+                refused,
+                f"{source_label}_{query}",
+                location,
+                base_name=f"{base}_refused",
+            ):
+                logger.info(f"  Saved (refused) → {path}")
 
         logger.info("Pipeline complete.")
         return valid

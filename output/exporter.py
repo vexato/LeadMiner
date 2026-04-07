@@ -3,6 +3,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 import pandas as pd
 
@@ -31,14 +32,21 @@ class Exporter:
         companies: list[Company],
         query: str,
         location: str,
+        base_name: Optional[str] = None,
     ) -> list[str]:
         """
         Write *companies* to configured format(s) and return the file paths.
 
         Args:
             companies: Enriched Company objects to export.
-            query:     Used to build the output filename.
-            location:  Used to build the output filename.
+            query:     Used to build the output filename (ignored if
+                       *base_name* is provided).
+            location:  Used to build the output filename (ignored if
+                       *base_name* is provided).
+            base_name: Pre-built filename stem (without extension). When
+                       given, *query* and *location* are not used — this
+                       lets callers share a single timestamp across
+                       multiple related exports (e.g. main + refused).
 
         Returns:
             List of absolute paths to files written.
@@ -47,9 +55,12 @@ class Exporter:
             logger.warning("No companies to export.")
             return []
 
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        slug = f"{query}_{location}".lower().replace(" ", "_")
-        base = f"{slug}_{ts}"
+        if base_name is None:
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            slug = f"{query}_{location}".lower().replace(" ", "_")
+            base = f"{slug}_{ts}"
+        else:
+            base = base_name
         fmt = self.settings.output_format.lower()
 
         paths: list[str] = []

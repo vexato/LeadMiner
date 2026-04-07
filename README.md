@@ -81,7 +81,22 @@ Google Maps search
 | `--scroll-count N` | `6` | Minimum scroll iterations on Google Maps. Raised automatically to `max(N, limit // 3 + 10)` to reach the requested limit. |
 | `--concurrency N` | `5` | Parallel website scrapers. Raise for speed, lower if you hit connection errors. |
 | `--no-headless` | *(off)* | Show the Chromium browser window — useful for debugging selectors or solving a CAPTCHA manually. |
+| `--ai` | *(off)* | Run a final AI relevance filter (Groq) to keep only companies matching the query. Requires `GROQ_API_KEY` in `.env`. |
 | `--verbose` / `-v` | *(off)* | Enable DEBUG logging. |
+
+### AI filter (`--ai`) + `.env`
+
+Create a `.env` file at the project root:
+
+```bash
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+Then run with `--ai`:
+
+```bash
+python main.py -q "agence web" -l "Bordeaux" --ai
+```
 
 ---
 

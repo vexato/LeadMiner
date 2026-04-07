@@ -19,6 +19,11 @@ import asyncio
 import logging
 import sys
 
+from dotenv import load_dotenv
+
+# Load .env before anything else so os.environ is populated for all modules
+load_dotenv()
+
 from config.settings import Settings
 from core.orchestrator import Orchestrator
 from scrapers.registry import AVAILABLE_SOURCES, parse_sources
@@ -77,6 +82,9 @@ def parse_args() -> argparse.Namespace:
                         help="Keep only companies with quality score >= N (max 7, default: 0)")
     parser.add_argument("--no-filter",   action="store_true",
                         help="Disable the junk/empty-record filter")
+    parser.add_argument("--ai",          action="store_true",
+                        help="Run a final Groq-powered relevance filter "
+                             "(requires GROQ_API_KEY env var)")
     parser.add_argument("--verbose",     "-v", action="store_true",
                         help="Enable DEBUG logging")
 
@@ -126,6 +134,7 @@ async def main() -> int:
         limit=args.limit,
         sources=sources,
         only=only,
+        ai=args.ai,
     )
 
     if not companies:
