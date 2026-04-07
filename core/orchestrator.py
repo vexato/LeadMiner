@@ -19,6 +19,7 @@ from config.settings import Settings
 from core.pipeline import Pipeline
 from models.company import Company
 from output.exporter import Exporter
+from scrapers.google_maps_scraper import GoogleMapsScraper
 from scrapers.registry import build_source
 from utils.deduplicator import deduplicate
 from utils.filter import apply_junk_filter
@@ -109,6 +110,16 @@ class Orchestrator:
         enriched = await self.pipeline.enrich_all(all_companies)
         valid = [c for c in enriched if c.is_valid()]
         logger.info(f"[3/7] {len(valid)} valid companies after enrichment")
+
+        # ── Step 3b: address backfill via Google Maps ─────────────────────────
+        if self.settings.address_backfill:
+            missing = sum(1 for c in valid if not c.address)
+            if missing:
+                logger.info(
+                    f"[3b/7] Address backfill: {missing} companies missing an address"
+                )
+                maps_backfiller = GoogleMapsScraper(self.settings)
+                await maps_backfiller.backfill_addresses(valid, location)
 
         # ── Step 4: score ─────────────────────────────────────────────────────
         score_all(valid)

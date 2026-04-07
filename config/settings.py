@@ -32,12 +32,22 @@ class Settings:
     contact_paths: list[str] = field(default_factory=lambda: [
         "/contact",
         "/contact-us",
+        "/contactez-nous",
         "/nous-contacter",
         "/about",
+        "/about-us",
         "/a-propos",
+        "/qui-sommes-nous",
+        "/equipe",
+        "/team",
+        "/our-team",
         "/mentions-legales",
         "/legal",
+        "/legal-notice",
+        "/impressum",
+        "/imprint",
         "/coordonnees",
+        "/infos",
     ])
     website_timeout: int = 10            # seconds per HTTP request
 
@@ -55,6 +65,9 @@ class Settings:
     filter_junk: bool = True             # remove aggregator/directory results
     filter_empty: bool = True            # remove records with no enrichment data
     min_score: int = 0                   # keep only companies with score >= this
+
+    # ── Enrichment ────────────────────────────────────────────────────────────
+    address_backfill: bool = True        # re-query Google Maps for missing addresses
 
     # ── Stealth: realistic user-agent pool ────────────────────────────────────
     user_agents: list[str] = field(default_factory=lambda: [

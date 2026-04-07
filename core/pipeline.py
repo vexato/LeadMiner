@@ -100,11 +100,14 @@ class Pipeline:
 
         homepage_html: str = data.get("homepage_html") or ""
         contact_html: str = data.get("contact_html") or ""
+        extra_html: str = data.get("extra_html") or ""
         contact_page_url: Optional[str] = data.get("contact_page_url")
 
-        # Email: prefer contact page over homepage
+        # Email: prefer contact page, then legal/about pages (extra_html),
+        # then fall back to the homepage. extract_best runs the full HTML
+        # strategy set (mailto hrefs, JS mailtos, obfuscated patterns, regex).
         extractor = EmailExtractor()
-        email = extractor.extract_best([contact_html, homepage_html])
+        email = extractor.extract_best([contact_html, extra_html, homepage_html])
 
         # Description: from homepage only
         description: Optional[str] = None

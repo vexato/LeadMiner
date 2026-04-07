@@ -83,6 +83,145 @@ class GoogleMapsScraper(BaseSource):
             finally:
                 await browser.close()
 
+    async def backfill_addresses(
+        self,
+        companies: list[Company],
+        location: str,
+    ) -> int:
+        """
+        Fill missing ``address`` fields by re-querying Google Maps per company.
+
+        Runs one search per target of the form ``"{company_name} {location}"``,
+        lands on the top place result, and scrapes its address. Mutates
+        *companies* in place. Companies that already have an address are
+        skipped. Failures are silently swallowed so a single lookup cannot
+        abort the batch.
+
+        Args:
+            companies: Full company list (mixed — already-known addresses
+                       are skipped).
+            location:  Geographic anchor for the lookup (e.g. "Bordeaux").
+
+        Returns:
+            Number of addresses filled.
+        """
+        targets = [
+            c for c in companies
+            if not c.address and c.company_name and c.company_name.strip()
+        ]
+        if not targets:
+            logger.debug("Address backfill: nothing to do")
+            return 0
+
+        logger.info(
+            f"Address backfill: looking up {len(targets)} companies on Google Maps"
+        )
+        filled = 0
+
+        async with async_playwright() as pw:
+            browser = await self._launch_browser(pw)
+            context = await self._create_context(browser)
+            page = await context.new_page()
+            await page.add_init_script(
+                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+            )
+
+            try:
+                consent_dismissed = False
+                for idx, company in enumerate(targets, 1):
+                    try:
+                        search_term = f"{company.company_name} {location}"
+                        encoded = urllib.parse.quote_plus(search_term)
+                        url = f"{self.settings.maps_base_url}{encoded}"
+                        await page.goto(
+                            url,
+                            timeout=self.settings.browser_timeout,
+                            wait_until="domcontentloaded",
+                        )
+
+                        if not consent_dismissed:
+                            await self._dismiss_consent(page)
+                            consent_dismissed = True
+
+                        await asyncio.sleep(self.settings.result_click_delay)
+
+                        address = await self._lookup_first_address(page)
+                        if address:
+                            company.address = address
+                            filled += 1
+                            logger.debug(
+                                f"  [{idx}/{len(targets)}] {company.company_name} → {address}"
+                            )
+                        else:
+                            logger.debug(
+                                f"  [{idx}/{len(targets)}] {company.company_name}: no address"
+                            )
+
+                        await async_random_delay(
+                            self.settings.min_delay, self.settings.max_delay
+                        )
+                    except Exception as exc:
+                        logger.debug(
+                            f"  Backfill failed for '{company.company_name}': {exc}"
+                        )
+                        continue
+            finally:
+                await browser.close()
+
+        logger.info(
+            f"Address backfill: filled {filled}/{len(targets)} addresses"
+        )
+        return filled
+
+    async def _lookup_first_address(self, page: Page) -> Optional[str]:
+        """
+        After navigating to a Maps search URL, return the address of the
+        first result — handles both layouts Google may land on:
+
+          (a) Direct place page (single unambiguous hit) — address button
+              already visible.
+          (b) Results feed — pick the first ``/maps/place/`` link, navigate
+              to it, then read the address button.
+        """
+        # (a) Direct place landing
+        direct = await self._get_text(page, [
+            'button[data-item-id="address"] .fontBodyMedium',
+            '[data-item-id="address"]',
+            'button[aria-label*="Adresse"] .fontBodyMedium',
+            'button[aria-label*="Address"] .fontBodyMedium',
+        ])
+        if direct:
+            return direct.strip()
+
+        # (b) Results feed → click first place
+        try:
+            await page.wait_for_selector(
+                '[role="feed"] a[href*="/maps/place/"]',
+                timeout=6_000,
+            )
+            first_link = await page.eval_on_selector(
+                '[role="feed"] a[href*="/maps/place/"]',
+                "el => el.href",
+            )
+            if not first_link:
+                return None
+
+            await page.goto(
+                first_link,
+                timeout=self.settings.browser_timeout,
+                wait_until="domcontentloaded",
+            )
+            await asyncio.sleep(self.settings.result_click_delay)
+            address = await self._get_text(page, [
+                'button[data-item-id="address"] .fontBodyMedium',
+                '[data-item-id="address"]',
+                'button[aria-label*="Adresse"] .fontBodyMedium',
+                'button[aria-label*="Address"] .fontBodyMedium',
+            ])
+            return address.strip() if address else None
+        except Exception:
+            return None
+
     # ── Browser setup ─────────────────────────────────────────────────────────
 
     async def _launch_browser(self, pw) -> Browser:

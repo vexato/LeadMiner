@@ -57,14 +57,19 @@ class WebsiteScraper:
 
         Returns:
             Dict with keys:
-              - ``homepage_html``   – HTML of the homepage (or None).
-              - ``contact_page_url``– URL of the first found contact page.
-              - ``contact_html``    – HTML of that contact page (or None).
+              - ``homepage_html``    – HTML of the homepage (or None).
+              - ``contact_page_url`` – URL of the first reached contact page.
+              - ``contact_html``     – HTML of that first contact page.
+              - ``extra_html``       – Concatenated HTML of up to
+                                       ``MAX_EXTRA_PAGES - 1`` additional
+                                       contact-like pages (legal, about, etc.),
+                                       used to widen email extraction coverage.
         """
         result: dict[str, Optional[str]] = {
             "homepage_html": None,
             "contact_page_url": None,
             "contact_html": None,
+            "extra_html": None,
         }
 
         if not is_valid_url(url):
@@ -73,19 +78,34 @@ class WebsiteScraper:
 
         result["homepage_html"] = await self._fetch(session, url)
 
+        # Walk every configured contact path and keep up to MAX_EXTRA_PAGES.
+        # The FIRST hit is recorded as ``contact_page_url`` (exposed in results),
+        # but subsequent pages are stacked into ``extra_html`` so the email
+        # extractor still sees /mentions-legales, /a-propos, /impressum, etc.
+        MAX_EXTRA_PAGES = 4
+        extras: list[str] = []
         base = self._base(url)
+
         for path in self.settings.contact_paths:
+            if len(extras) >= MAX_EXTRA_PAGES:
+                break
             contact_url = urljoin(base, path)
             await async_random_delay(
                 self.settings.website_min_delay,
                 self.settings.website_max_delay,
             )
             html = await self._fetch(session, contact_url)
-            if html:
+            if not html:
+                continue
+            if result["contact_page_url"] is None:
                 result["contact_page_url"] = contact_url
                 result["contact_html"] = html
                 logger.debug(f"Contact page found: {contact_url}")
-                break
+            extras.append(html)
+
+        if len(extras) > 1:
+            # The first page is already in contact_html; stack the rest.
+            result["extra_html"] = "\n".join(extras[1:])
 
         return result
 

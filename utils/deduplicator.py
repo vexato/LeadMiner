@@ -7,6 +7,7 @@ from each source rather than discarding the weaker record.
 """
 
 import re
+import unicodedata
 import urllib.parse
 from typing import Optional
 
@@ -21,10 +22,24 @@ _SUFFIX_RE = re.compile(
 )
 
 
+def _strip_accents(text: str) -> str:
+    """Decompose unicode chars and drop combining marks (é → e, ç → c)."""
+    decomposed = unicodedata.normalize("NFD", text)
+    return "".join(ch for ch in decomposed if not unicodedata.combining(ch))
+
+
 def _norm_name(name: str) -> str:
-    """Lowercase, strip legal suffixes and punctuation."""
+    """
+    Normalise a company name for duplicate matching.
+
+    Pipeline: lowercase → strip accents → drop legal suffixes →
+    collapse dashes/punctuation → collapse whitespace.
+    """
     name = name.lower().strip()
+    name = _strip_accents(name)
     name = _SUFFIX_RE.sub("", name)
+    # Treat dashes as separators (so "agence-web" == "agence web")
+    name = re.sub(r"[-_]+", " ", name)
     name = re.sub(r"[^\w\s]", " ", name)
     return re.sub(r"\s+", " ", name).strip()
 
