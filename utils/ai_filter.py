@@ -58,21 +58,27 @@ def _ask_groq(client, query: str, company: Company) -> bool:
             {
                 "role": "system",
                 "content": (
-                    "Tu es un filtre de pertinence. Tu réponds UNIQUEMENT "
-                    "par 'oui' ou 'non', rien d'autre."
+                    "Tu es un expert en classification d'entreprises. "
+                    "Ton rôle est de déterminer si l'activité PRINCIPALE d'une entreprise correspond à la requête de l'utilisateur. "
+                    "\n\nCONSIGNE STRICTE :\n"
+                    "Réponds 'non' si l'entreprise fournit seulement des services périphériques (ex: services juridiques, recrutement, formation, assurance, vente de matériel) liés au secteur, "
+                    "SAUF si la requête demande explicitement ces services périphériques.\n\n"
+                    "Réponds UNIQUEMENT par 'oui' ou 'non'."
                 ),
             },
             {
                 "role": "user",
                 "content": (
-                    f'Cette entreprise correspond-elle à la recherche "{query}" ?\n\n'
-                    f"Nom : {company.company_name}\n"
-                    f"Description : {company.description or ''}\n\n"
-                    "Réponds uniquement 'oui' ou 'non'."
+                    f"Requête : '{query}'\n\n"
+                    f"Entreprise : {company.company_name}\n"
+                    f"Site web : {company.website or ''}\n"
+                    f"Description : {company.description or 'Non disponible'}\n\n"
+                    f"Est-ce que cette entreprise correspond à la requête '{query}' ? "
+                    "Réponds par 'oui' ou 'non'."
                 ),
             },
         ],
-        model="llama-3.1-8b-instant",
+        model="llama-3.3-70b-versatile",
         max_tokens=5,
         temperature=0,
     )

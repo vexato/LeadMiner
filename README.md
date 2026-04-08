@@ -1,200 +1,249 @@
-# internship
+# LeadMiner
 
-CLI tool that searches **Google Maps** for companies matching a domain and location, then enriches each result by visiting the company's website to extract an email address, a short description, and a contact page URL.
+LeadMiner est un outil CLI Python pour générer des leads B2B a partir de plusieurs sources web, puis enrichir automatiquement chaque entreprise.
 
----
+Le projet:
+- cherche des entreprises via `Google Maps`, `Pages Jaunes` et/ou `Google Search`
+- deduplique les doublons (nom + domaine)
+- enrichit via le site web (email, page contact, description)
+- calcule un score qualite
+- exporte en `JSON` et/ou `CSV`
+
+## Fonctionnement global
+
+```text
+1) Discovery (sources: maps, pj, google)
+2) Tagging de la source
+3) Deduplication + fusion des champs
+4) Enrichissement website (async/concurrent)
+5) Scoring qualite
+6) Filtres (junk, empty, --only, --min-score)
+7) Tri par score descendant
+8) Filtre IA optionnel (--ai, Groq)
+9) Export JSON/CSV
+```
+
+## Prerequis
+
+- Python `3.11+`
+- Playwright Chromium (necessaire pour les sources navigateur)
 
 ## Installation
-
-**Requirements: Python 3.11+**
 
 ```bash
 pip install -r requirements.txt
 playwright install chromium
 ```
 
----
-
-## Quick start
+## Demarrage rapide
 
 ```bash
-python main.py --query "agence web" --location "Bordeaux" --limit 20
+python main.py -q "agence web" -l "Bordeaux"
 ```
 
-Results are saved to `results/` as JSON and CSV.
+Par defaut:
+- source = `maps`
+- limite = `20` entreprises par source
+- format = `both` (JSON + CSV)
+- dossier de sortie = `results/`
 
----
-
-## Pipeline
-
-```
-Google Maps search
-      │
-      ▼
- List of companies  (name, address, website)
-      │
-      ▼
- Website enrichment  (email, description, contact page)   ← async, concurrent
-      │
-      ▼
- --only filter  (optional)
-      │
-      ▼
- Export  →  results/<query>_<location>_<timestamp>.json / .csv
-```
-
----
-
-## Parameters
-
-### Required
-
-| Parameter | Short | Description |
-|-----------|-------|-------------|
-| `--query QUERY` | `-q` | Type of company to search for, e.g. `"agence web"`, `"cabinet comptable"`. |
-| `--location LOCATION` | `-l` | City, region, or address to search in. |
-
-### Volume & output
-
-| Parameter | Short | Default | Description |
-|-----------|-------|---------|-------------|
-| `--limit N` | `-n` | `20` | Maximum number of companies to collect. The scraper stops as soon as it reaches this number **or** Google Maps has no more results. Most queries return 40–120 results for a given city. |
-| `--format FORMAT` | `-f` | `both` | Output format: `json`, `csv`, or `both`. |
-| `--output-dir DIR` | `-o` | `results/` | Directory where result files are written (created automatically). |
-
-### Filtering
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `--only FIELDS` | *(none)* | Keep only companies that have **all** listed fields populated after enrichment. Comma-separated combination of: `email`, `contact`, `website`, `address`, `description`. |
+## Utilisation avec plusieurs sources
 
 ```bash
---only email                  # only companies with an email found
---only email,contact          # email + contact page both found
+python main.py -q "societes de services numeriques" -l "Bordeaux" -s maps,pj,google -n 40
+```
+
+Important: `--limit` est applique par source. Avec 3 sources, le volume brut peut etre superieur a la limite avant deduplication/filtrage.
+
+## Options CLI
+
+### Obligatoires
+
+| Option | Short | Description |
+|---|---|---|
+| `--query` | `-q` | Activite recherchee (ex: `agence web`) |
+| `--location` | `-l` | Ville/zone (ex: `Bordeaux`) |
+
+### Sources / volume / sortie
+
+| Option | Defaut | Description |
+|---|---|---|
+| `--source` (`-s`) | `maps` | Sources separees par virgule: `maps`, `pj`, `google` |
+| `--limit` (`-n`) | `20` | Nombre max d'entreprises par source |
+| `--format` (`-f`) | `both` | `json`, `csv` ou `both` |
+| `--output-dir` (`-o`) | `results` | Dossier d'export |
+
+### Filtrage qualite
+
+| Option | Defaut | Description |
+|---|---|---|
+| `--only` | none | Garde seulement les entreprises ayant TOUS les champs demandes (`email`, `contact`, `website`, `address`, `description`) |
+| `--min-score` | `0` | Garde seulement les entreprises avec `score >= N` |
+| `--no-filter` | off | Desactive le filtre anti-junk + anti-fiches vides |
+
+Exemples `--only`:
+```bash
+--only email
+--only email,contact
 --only email,website,description
 ```
 
-### Scraping behaviour
+### Comportement scraping
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `--scroll-count N` | `6` | Minimum scroll iterations on Google Maps. Raised automatically to `max(N, limit // 3 + 10)` to reach the requested limit. |
-| `--concurrency N` | `5` | Parallel website scrapers. Raise for speed, lower if you hit connection errors. |
-| `--no-headless` | *(off)* | Show the Chromium browser window — useful for debugging selectors or solving a CAPTCHA manually. |
-| `--ai` | *(off)* | Run a final AI relevance filter (Groq) to keep only companies matching the query. Requires `GROQ_API_KEY` in `.env`. |
-| `--verbose` / `-v` | *(off)* | Enable DEBUG logging. |
+| Option | Defaut | Description |
+|---|---|---|
+| `--scroll-count` | `6` | Nombre de scrolls Maps (impacte surtout la source `maps`) |
+| `--concurrency` | `5` | Nombre de scrapers websites en parallele |
+| `--no-headless` | off | Affiche le navigateur (debug/CAPTCHA) |
+| `--verbose` (`-v`) | off | Active les logs debug |
 
-### AI filter (`--ai`) + `.env`
+### Filtre IA (optionnel)
 
-Create a `.env` file at the project root:
+| Option | Defaut | Description |
+|---|---|---|
+| `--ai` | off | Filtre final de pertinence via Groq. Exporte aussi les entreprises refusees dans des fichiers `*_refused.*` |
+
+## Configuration `.env` (pour `--ai`)
+
+Creer un fichier `.env` a la racine:
 
 ```bash
-GROQ_API_KEY=your_groq_api_key_here
+GROQ_API_KEY=your_api_key_here
 ```
 
-Then run with `--ai`:
+Puis lancer:
 
 ```bash
 python main.py -q "agence web" -l "Bordeaux" --ai
 ```
 
----
+## Score qualite
 
-## Output fields
+Le score est calcule sur 11 points max:
 
-| Field | Description |
-|-------|-------------|
-| `company_name` | Name as shown on Google Maps. |
-| `website` | Company website URL. |
-| `email` | First valid email found on the contact page or homepage. |
-| `description` | Short summary (≤ 300 chars) from the homepage meta description or main content. |
-| `contact_page` | URL of the first reachable contact-like page (`/contact`, `/about`, `/mentions-legales`, …). |
-| `address` | Street address from Google Maps. |
+- `+2` website present
+- `+2` adresse presente
+- `+1` page contact presente
+- `+1` description presente
+- `+3` email pro
+- `-2` email provider gratuit (gmail, outlook, etc.)
+- `+2` entreprise vue sur plusieurs sources
 
----
+Le pipeline trie ensuite les resultats par score descendant.
 
-## Advanced configuration
+## Champs exportes
 
-Parameters not exposed on the CLI can be tweaked in `config/settings.py`:
+| Champ | Description |
+|---|---|
+| `company_name` | Nom de l'entreprise |
+| `website` | URL du site |
+| `email` | Email detecte |
+| `description` | Description courte |
+| `contact_page` | URL de page contact detectee |
+| `address` | Adresse postale |
+| `sources` | Sources d'origine (`maps`, `pj`, `google`) |
+| `score` | Score qualite final |
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `scroll_delay` | `2.0 s` | Pause between each Google Maps scroll. |
-| `result_click_delay` | `1.5 s` | Wait after navigating to a place detail page. |
-| `min_delay` / `max_delay` | `1.0–3.0 s` | Random delay between place-page visits. |
-| `website_min_delay` / `website_max_delay` | `0.5–1.5 s` | Random delay between contact-path probes. |
-| `website_timeout` | `10 s` | HTTP timeout per website request. |
-| `max_description_length` | `300` | Maximum characters in the description field. |
-| `contact_paths` | see settings | URL paths probed to find a contact page. |
+## Nommage des fichiers
 
----
+Les exports sont ecrits dans `results/` (ou `--output-dir`) avec un format de type:
 
-## Examples
+```text
+<sources>_<query>_<location>_<timestamp>.json
+<sources>_<query>_<location>_<timestamp>.csv
+```
+
+Si `--ai` est active, des fichiers supplementaires sont crees pour les refus:
+
+```text
+..._refused.json
+..._refused.csv
+```
+
+## Exemples utiles
 
 ```bash
-# Basic search
+# Basique (Google Maps)
 python main.py -q "agence web" -l "Bordeaux"
 
-# 50 results, CSV only
-python main.py -q "agence digitale" -l "Paris" -n 50 -f csv
+# Multi-sources + CSV uniquement
+python main.py -q "agence digitale" -l "Paris" -s maps,pj,google -n 30 -f csv
 
-# Only companies with an email
-python main.py -q "développement web" -l "Lyon" --only email
+# Leads avec email + page contact
+python main.py -q "developpement web" -l "Lyon" --only email,contact
 
-# Only companies with email + contact page
-python main.py -q "startup tech" -l "Toulouse" -n 100 --only email,contact
+# Forcer des leads plus qualifies
+python main.py -q "ssii" -l "Toulouse" -s maps,pj,google --min-score 5
 
-# Debug with visible browser
-python main.py -q "agence web" -l "Nantes" -n 10 --no-headless --verbose
-
-# Custom output folder
-python main.py -q "agence seo" -l "Marseille" -o ./exports
+# Debug navigateur visible
+python main.py -q "agence seo" -l "Nantes" --no-headless --verbose
 ```
 
----
+## Structure du projet
 
-## Project structure
-
-```
-internship/
-├── main.py                   CLI entry point
+```text
+.
+├── main.py
 ├── requirements.txt
 ├── config/
-│   └── settings.py           All tuneable parameters
-├── models/
-│   └── company.py            Company dataclass
-├── scrapers/
-│   ├── base.py               BaseSource interface (add new sources here)
-│   ├── registry.py           Source factory
-│   ├── google_maps_scraper.py  Playwright — search & place extraction
-│   └── website_scraper.py      aiohttp — homepage & contact pages
-├── extractors/
-│   ├── email_extractor.py    Regex-based email extraction
-│   └── text_extractor.py     Description extraction from HTML
+│   └── settings.py
 ├── core/
-│   ├── pipeline.py           Concurrent website enrichment
-│   └── orchestrator.py       Wires all steps together
+│   ├── orchestrator.py
+│   └── pipeline.py
+├── scrapers/
+│   ├── base.py
+│   ├── registry.py
+│   ├── google_maps_scraper.py
+│   ├── pages_jaunes_scraper.py
+│   ├── google_search_scraper.py
+│   └── website_scraper.py
+├── extractors/
+│   ├── email_extractor.py
+│   └── text_extractor.py
+├── models/
+│   └── company.py
 ├── utils/
-│   ├── filters.py            --only field filtering
-│   ├── helpers.py            Retry decorators, delays
-│   ├── logger.py             Logging setup
-│   └── validators.py         URL & email validation
+│   ├── deduplicator.py
+│   ├── filter.py
+│   ├── filters.py
+│   ├── scorer.py
+│   ├── ai_filter.py
+│   └── ...
 └── output/
-    └── exporter.py           JSON & CSV export
+    └── exporter.py
 ```
 
----
+## Depannage
 
-## Troubleshooting
+### Je n'ai pas beaucoup de resultats
 
-**Only 20–25 results with a high limit**
-Google Maps may have fewer entries for that query + location. Try `--no-headless` to watch what the browser sees.
+- augmenter `--limit`
+- activer plusieurs sources avec `-s maps,pj,google`
+- utiliser `--no-headless` pour verifier visuellement les pages
 
-**No emails found**
-Many French SMEs don't publish emails. Try `--only contact` to keep companies with a `/contact` page and prospect manually.
+### Je n'ai pas d'emails
 
-**Browser crashes or Playwright errors**
-Run `playwright install chromium` again.
+C'est frequent: beaucoup de sites n'affichent pas d'email direct.
 
-**Blocked by Google (CAPTCHA)**
-Lower `--concurrency` and raise delays in `config/settings.py` (`scroll_delay`, `min_delay`). Use `--no-headless` to solve the CAPTCHA manually once.
+Pistes:
+- utiliser `--only contact` pour garder les entreprises avec page contact
+- combiner plusieurs sources pour recuperer plus de websites
+
+### Erreurs Playwright / navigateur
+
+Reinstaller Chromium:
+
+```bash
+playwright install chromium
+```
+
+### CAPTCHA / blocages
+
+- relancer avec `--no-headless`
+- reduire `--concurrency`
+- augmenter les delais dans `config/settings.py`
+
+## Notes
+
+- Utiliser ce projet en respectant les CGU des sites cibles et la legislation locale.
+- Les structures HTML des moteurs changent regulierement: certains selecteurs peuvent necessiter des ajustements.

@@ -1,4 +1,4 @@
-"""Logging setup for the internship tool."""
+"""Logging setup for the LeadMiner tool."""
 
 import logging
 import sys
@@ -7,7 +7,7 @@ from typing import Optional
 
 
 def setup_logger(
-    name: str = "internship",
+    name: str = "LeadMiner",
     level: int = logging.INFO,
     log_file: Optional[str] = None,
 ) -> logging.Logger:

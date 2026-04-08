@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-internship — Company discovery CLI tool
+LeadMiner — Company discovery CLI tool
 ========================================
 
 Searches Google Maps for companies matching a domain + location, then
@@ -18,6 +18,7 @@ import argparse
 import asyncio
 import logging
 import sys
+from art import tprint
 
 from dotenv import load_dotenv
 
@@ -30,14 +31,14 @@ from scrapers.registry import AVAILABLE_SOURCES, parse_sources
 from utils.filters import parse_only, VALID_FIELDS
 from utils.logger import setup_logger
 
-logger = setup_logger("internship")
+logger = setup_logger("LeadMiner")
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        prog="internship",
+        prog="LeadMiner",
         description="Find companies on Google Maps and enrich with website data",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
@@ -93,7 +94,7 @@ def parse_args() -> argparse.Namespace:
 
 def build_settings(args: argparse.Namespace) -> Settings:
     if args.verbose:
-        for name in ("internship", "scrapers", "core", "extractors", "output", "utils"):
+        for name in ("LeadMiner", "scrapers", "core", "extractors", "output", "utils"):
             setup_logger(name, level=logging.DEBUG)
 
     return Settings(
@@ -114,6 +115,7 @@ async def main() -> int:
     args = parse_args()
     settings = build_settings(args)
 
+    tprint("LeadMiner")
     try:
         sources = parse_sources(args.source)
     except ValueError as exc:

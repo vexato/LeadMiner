@@ -1,4 +1,4 @@
-"""Central configuration for the internship scraper."""
+"""Central configuration for the LeadMiner scraper."""
 
 from dataclasses import dataclass, field
 
