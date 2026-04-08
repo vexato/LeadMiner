@@ -21,6 +21,7 @@ Il decouvre des entreprises, deduplique les fiches, enrichit les donnees depuis 
 - [Structure du projet](#structure-du-projet)
 - [Depannage](#depannage)
 - [Bonnes pratiques legales](#bonnes-pratiques-legales)
+- [Licence](#licence)
 
 ## Fonctionnalites
 
@@ -270,3 +271,7 @@ playwright install chromium
 - Respecter les CGU des sites cibles.
 - Respecter la legislation locale (scraping, protection des donnees, prospection).
 - Prevoir de maintenir les selecteurs: les structures HTML changent regulierement.
+
+## Licence
+
+Ce projet est distribue sous licence MIT. Voir [LICENSE](../LICENSE).

@@ -26,6 +26,7 @@ It discovers companies, deduplicates records, enriches data from company website
 - [Project Structure](#project-structure)
 - [Troubleshooting](#troubleshooting)
 - [Legal Best Practices](#legal-best-practices)
+- [License](#license)
 
 ## Features
 
@@ -276,3 +277,7 @@ playwright install chromium
 - Respect target websites Terms of Service.
 - Respect local regulations (scraping, data privacy, outreach).
 - Maintain selectors over time because HTML structures change frequently.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
