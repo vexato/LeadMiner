@@ -1,6 +1,6 @@
 # LeadMiner
 
-[![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)](https://github.com/vexato/LeadMiner/actions)
+[![CI](https://github.com/vexato/LeadMiner/actions/workflows/ci.yml/badge.svg)](https://github.com/vexato/LeadMiner/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![Latest Release](https://img.shields.io/github/v/release/vexato/LeadMiner?display_name=tag&label=release)](https://github.com/vexato/LeadMiner/releases)
 [![License](https://img.shields.io/github/license/vexato/LeadMiner?label=license)](https://github.com/vexato/LeadMiner/blob/main/LICENSE)
