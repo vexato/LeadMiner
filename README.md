@@ -1,5 +1,10 @@
 # LeadMiner
 
+[![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)](https://github.com/vexato/LeadMiner/actions)
+[![Python](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![Latest Release](https://img.shields.io/github/v/release/vexato/LeadMiner?display_name=tag&label=release)](https://github.com/vexato/LeadMiner/releases)
+[![License](https://img.shields.io/github/license/vexato/LeadMiner?label=license)](https://github.com/vexato/LeadMiner/blob/main/LICENSE)
+
 Language: EN | [FR](docs/README.fr.md)
 
 LeadMiner is a Python CLI tool for multi-source B2B lead generation.
