@@ -1,6 +1,6 @@
 # LeadMiner
 
-Language: EN | [FR](README.fr.md)
+Language: EN | [FR](docs/README.fr.md)
 
 LeadMiner is a Python CLI tool for multi-source B2B lead generation.
 It discovers companies, deduplicates records, enriches data from company websites, assigns a quality score, and exports results to JSON and CSV.
@@ -31,6 +31,11 @@ It discovers companies, deduplicates records, enriches data from company website
 - Filters by required fields and minimum score
 - Export to JSON, CSV, or both
 - Optional final AI filter (Groq)
+
+## Preview
+
+<img src="./docs/Animation.gif"/>
+
 
 ## Pipeline
 
