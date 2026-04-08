@@ -1,32 +1,55 @@
 # LeadMiner
 
-LeadMiner est un outil CLI Python pour générer des leads B2B a partir de plusieurs sources web, puis enrichir automatiquement chaque entreprise.
+Language: EN | [FR](README.fr.md)
 
-Le projet:
-- cherche des entreprises via `Google Maps`, `Pages Jaunes` et/ou `Google Search`
-- deduplique les doublons (nom + domaine)
-- enrichit via le site web (email, page contact, description)
-- calcule un score qualite
-- exporte en `JSON` et/ou `CSV`
+LeadMiner is a Python CLI tool for multi-source B2B lead generation.
+It discovers companies, deduplicates records, enriches data from company websites, assigns a quality score, and exports results to JSON and CSV.
 
-## Fonctionnement global
+## Table of Contents
+
+- [Features](#features)
+- [Pipeline](#pipeline)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [CLI Options](#cli-options)
+- [AI Filter (Optional)](#ai-filter-optional)
+- [Quality Score](#quality-score)
+- [Exported Fields](#exported-fields)
+- [Output Naming](#output-naming)
+- [Useful Examples](#useful-examples)
+- [Project Structure](#project-structure)
+- [Troubleshooting](#troubleshooting)
+- [Legal Best Practices](#legal-best-practices)
+
+## Features
+
+- Multi-source discovery: maps, pj, google
+- Record deduplication (name + domain)
+- Website enrichment (email, contact page, description)
+- Lead quality scoring
+- Filters by required fields and minimum score
+- Export to JSON, CSV, or both
+- Optional final AI filter (Groq)
+
+## Pipeline
 
 ```text
 1) Discovery (sources: maps, pj, google)
-2) Tagging de la source
-3) Deduplication + fusion des champs
-4) Enrichissement website (async/concurrent)
-5) Scoring qualite
-6) Filtres (junk, empty, --only, --min-score)
-7) Tri par score descendant
-8) Filtre IA optionnel (--ai, Groq)
-9) Export JSON/CSV
+2) Source tagging
+3) Deduplication + field merge
+4) Website enrichment (async/concurrent)
+5) Quality scoring
+6) Filters (junk, empty, --only, --min-score)
+7) Sort by score (descending)
+8) Optional AI filtering (--ai, Groq)
+9) JSON/CSV export
 ```
 
-## Prerequis
+## Requirements
 
-- Python `3.11+`
-- Playwright Chromium (necessaire pour les sources navigateur)
+- Python 3.11+
+- Playwright Chromium
 
 ## Installation
 
@@ -35,151 +58,145 @@ pip install -r requirements.txt
 playwright install chromium
 ```
 
-## Demarrage rapide
+## Quick Start
 
 ```bash
-python main.py -q "agence web" -l "Bordeaux"
+python main.py -q "web agency" -l "Bordeaux"
 ```
 
-Par defaut:
-- source = `maps`
-- limite = `20` entreprises par source
-- format = `both` (JSON + CSV)
-- dossier de sortie = `results/`
+Default behavior:
 
-## Utilisation avec plusieurs sources
+- source = maps
+- limit = 20 companies per source
+- format = both (JSON + CSV)
+- output directory = results/
 
-```bash
-python main.py -q "societes de services numeriques" -l "Bordeaux" -s maps,pj,google -n 40
-```
+Important: --limit is applied per source. With maps,pj,google, the raw volume can exceed the limit before deduplication and filtering.
 
-Important: `--limit` est applique par source. Avec 3 sources, le volume brut peut etre superieur a la limite avant deduplication/filtrage.
+## CLI Options
 
-## Options CLI
-
-### Obligatoires
+### Required
 
 | Option | Short | Description |
 |---|---|---|
-| `--query` | `-q` | Activite recherchee (ex: `agence web`) |
-| `--location` | `-l` | Ville/zone (ex: `Bordeaux`) |
+| --query | -q | Search activity (example: web agency) |
+| --location | -l | City/area (example: Bordeaux) |
 
-### Sources / volume / sortie
+### Sources, volume, output
 
-| Option | Defaut | Description |
+| Option | Default | Description |
 |---|---|---|
-| `--source` (`-s`) | `maps` | Sources separees par virgule: `maps`, `pj`, `google` |
-| `--limit` (`-n`) | `20` | Nombre max d'entreprises par source |
-| `--format` (`-f`) | `both` | `json`, `csv` ou `both` |
-| `--output-dir` (`-o`) | `results` | Dossier d'export |
+| --source (-s) | maps | Comma-separated sources: maps, pj, google |
+| --limit (-n) | 20 | Max companies per source |
+| --format (-f) | both | json, csv, or both |
+| --output-dir (-o) | results | Export directory |
 
-### Filtrage qualite
+### Quality filtering
 
-| Option | Defaut | Description |
+| Option | Default | Description |
 |---|---|---|
-| `--only` | none | Garde seulement les entreprises ayant TOUS les champs demandes (`email`, `contact`, `website`, `address`, `description`) |
-| `--min-score` | `0` | Garde seulement les entreprises avec `score >= N` |
-| `--no-filter` | off | Desactive le filtre anti-junk + anti-fiches vides |
+| --only | none | Keep companies with ALL requested fields (email, contact, website, address, description) |
+| --min-score | 0 | Keep companies with score >= N |
+| --no-filter | off | Disable junk and empty-record filtering |
 
-Exemples `--only`:
+Examples for --only:
+
 ```bash
 --only email
 --only email,contact
 --only email,website,description
 ```
 
-### Comportement scraping
+### Scraping behavior
 
-| Option | Defaut | Description |
+| Option | Default | Description |
 |---|---|---|
-| `--scroll-count` | `6` | Nombre de scrolls Maps (impacte surtout la source `maps`) |
-| `--concurrency` | `5` | Nombre de scrapers websites en parallele |
-| `--no-headless` | off | Affiche le navigateur (debug/CAPTCHA) |
-| `--verbose` (`-v`) | off | Active les logs debug |
+| --scroll-count | 6 | Number of Google Maps scroll iterations |
+| --concurrency | 5 | Number of parallel website scrapers |
+| --no-headless | off | Show browser window (debug/CAPTCHA) |
+| --verbose (-v) | off | Enable debug logs |
 
-### Filtre IA (optionnel)
+## AI Filter (Optional)
 
-| Option | Defaut | Description |
+| Option | Default | Description |
 |---|---|---|
-| `--ai` | off | Filtre final de pertinence via Groq. Exporte aussi les entreprises refusees dans des fichiers `*_refused.*` |
+| --ai | off | Final relevance filtering via Groq. Also exports refused companies into *_refused.* files |
 
-## Configuration `.env` (pour `--ai`)
-
-Creer un fichier `.env` a la racine:
+Create a .env file at the project root:
 
 ```bash
 GROQ_API_KEY=your_api_key_here
 ```
 
-Puis lancer:
+Then run:
 
 ```bash
-python main.py -q "agence web" -l "Bordeaux" --ai
+python main.py -q "web agency" -l "Bordeaux" --ai
 ```
 
-## Score qualite
+## Quality Score
 
-Le score est calcule sur 11 points max:
+Score is calculated with a maximum of 11 points:
 
-- `+2` website present
-- `+2` adresse presente
-- `+1` page contact presente
-- `+1` description presente
-- `+3` email pro
-- `-2` email provider gratuit (gmail, outlook, etc.)
-- `+2` entreprise vue sur plusieurs sources
+- +2 website present
+- +2 address present
+- +1 contact page present
+- +1 description present
+- +3 professional email
+- -2 free-provider email (gmail, outlook, etc.)
+- +2 company found in multiple sources
 
-Le pipeline trie ensuite les resultats par score descendant.
+Results are sorted by descending score.
 
-## Champs exportes
+## Exported Fields
 
-| Champ | Description |
+| Field | Description |
 |---|---|
-| `company_name` | Nom de l'entreprise |
-| `website` | URL du site |
-| `email` | Email detecte |
-| `description` | Description courte |
-| `contact_page` | URL de page contact detectee |
-| `address` | Adresse postale |
-| `sources` | Sources d'origine (`maps`, `pj`, `google`) |
-| `score` | Score qualite final |
+| company_name | Company name |
+| website | Website URL |
+| email | Detected email |
+| description | Short description |
+| contact_page | Detected contact page URL |
+| address | Postal address |
+| sources | Origin sources (maps, pj, google) |
+| score | Final quality score |
 
-## Nommage des fichiers
+## Output Naming
 
-Les exports sont ecrits dans `results/` (ou `--output-dir`) avec un format de type:
+Exports are written to results/ (or --output-dir) with names like:
 
 ```text
 <sources>_<query>_<location>_<timestamp>.json
 <sources>_<query>_<location>_<timestamp>.csv
 ```
 
-Si `--ai` est active, des fichiers supplementaires sont crees pour les refus:
+If --ai is enabled, extra files are generated for refused companies:
 
 ```text
 ..._refused.json
 ..._refused.csv
 ```
 
-## Exemples utiles
+## Useful Examples
 
 ```bash
-# Basique (Google Maps)
-python main.py -q "agence web" -l "Bordeaux"
+# Basic (Google Maps)
+python main.py -q "web agency" -l "Bordeaux"
 
-# Multi-sources + CSV uniquement
-python main.py -q "agence digitale" -l "Paris" -s maps,pj,google -n 30 -f csv
+# Multi-source + CSV only
+python main.py -q "digital agency" -l "Paris" -s maps,pj,google -n 30 -f csv
 
-# Leads avec email + page contact
-python main.py -q "developpement web" -l "Lyon" --only email,contact
+# Leads with email + contact page
+python main.py -q "web development" -l "Lyon" --only email,contact
 
-# Forcer des leads plus qualifies
-python main.py -q "ssii" -l "Toulouse" -s maps,pj,google --min-score 5
+# Higher quality leads only
+python main.py -q "it services" -l "Toulouse" -s maps,pj,google --min-score 5
 
-# Debug navigateur visible
-python main.py -q "agence seo" -l "Nantes" --no-headless --verbose
+# Visible browser debug
+python main.py -q "seo agency" -l "Nantes" --no-headless --verbose
 ```
 
-## Structure du projet
+## Project Structure
 
 ```text
 .
@@ -213,37 +230,39 @@ python main.py -q "agence seo" -l "Nantes" --no-headless --verbose
     └── exporter.py
 ```
 
-## Depannage
+## Troubleshooting
 
-### Je n'ai pas beaucoup de resultats
+### Too few results
 
-- augmenter `--limit`
-- activer plusieurs sources avec `-s maps,pj,google`
-- utiliser `--no-headless` pour verifier visuellement les pages
+- Increase --limit
+- Enable multiple sources with -s maps,pj,google
+- Use --no-headless to inspect pages visually
 
-### Je n'ai pas d'emails
+### No emails found
 
-C'est frequent: beaucoup de sites n'affichent pas d'email direct.
+This is common: many websites do not expose direct email addresses.
 
-Pistes:
-- utiliser `--only contact` pour garder les entreprises avec page contact
-- combiner plusieurs sources pour recuperer plus de websites
+Tips:
 
-### Erreurs Playwright / navigateur
+- Use --only contact to keep companies with a contact page
+- Combine multiple sources to get more websites
 
-Reinstaller Chromium:
+### Playwright or browser errors
+
+Reinstall Chromium:
 
 ```bash
 playwright install chromium
 ```
 
-### CAPTCHA / blocages
+### CAPTCHA or blocking
 
-- relancer avec `--no-headless`
-- reduire `--concurrency`
-- augmenter les delais dans `config/settings.py`
+- Re-run with --no-headless
+- Reduce --concurrency
+- Increase delays in config/settings.py
 
-## Notes
+## Legal Best Practices
 
-- Utiliser ce projet en respectant les CGU des sites cibles et la legislation locale.
-- Les structures HTML des moteurs changent regulierement: certains selecteurs peuvent necessiter des ajustements.
+- Respect target websites Terms of Service.
+- Respect local regulations (scraping, data privacy, outreach).
+- Maintain selectors over time because HTML structures change frequently.
