@@ -32,7 +32,7 @@ Il decouvre des entreprises, deduplique les fiches, enrichit les donnees depuis 
 - Export en `JSON`, `CSV` ou les deux
 - Filtre final IA (Groq) en option
 
-## Previsualisation
+## Prévisualisation (durée réelle : 9 min)
 
 <img src="./Animation.gif"/>
 

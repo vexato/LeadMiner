@@ -32,7 +32,7 @@ It discovers companies, deduplicates records, enriches data from company website
 - Export to JSON, CSV, or both
 - Optional final AI filter (Groq)
 
-## Preview
+## Preview (real duration: 9 min)
 
 <img src="./docs/Animation.gif"/>
 
