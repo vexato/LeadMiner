@@ -10,6 +10,27 @@ Language: EN | [FR](docs/README.fr.md)
 LeadMiner is a Python CLI tool for multi-source B2B lead generation.
 It discovers companies, deduplicates records, enriches data from company websites, assigns a quality score, and exports results to JSON and CSV.
 
+## ⭐ Support the project
+
+<p align="center">
+  <a href="https://github.com/vexato/LeadMiner">
+    <img src="https://img.shields.io/github/stars/vexato/LeadMiner?style=social" />
+  </a>
+  <a href="https://github.com/vexato/LeadMiner/fork">
+    <img src="https://img.shields.io/github/forks/vexato/LeadMiner?style=social" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://discord.gg/j3AX5aPEQU">
+    <img src="https://img.shields.io/badge/Join-Discord-5865F2?logo=discord&logoColor=white" />
+  </a>
+</p>
+
+<p align="center">
+  Your support helps the project grow 🚀
+</p>
+
 ## Table of Contents
 
 - [Features](#features)
