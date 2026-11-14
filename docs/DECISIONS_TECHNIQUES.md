@@ -1,0 +1,8 @@
+# Décisions techniques
+
+1. **Moteur Python monolithique avec frontières fonctionnelles.** Les adaptateurs de découverte et d'export restent branchables. Les extractions HTML sont testables sans réseau. Le worker peut évoluer indépendamment de la CLI et du serveur HTTP.
+2. **Découverte française via DINUM.** La source publique Recherche d'entreprises utilise les données de Sirene. Les établissements locaux et actifs sont contrôlés au niveau du SIRET. Un code NAF explicite permet une recherche sectorielle et une recherche textuelle reste possible pour la dénomination ou l'adresse. [Contrat API](https://recherche-entreprises.api.gouv.fr/docs/)
+3. **Identité prudente.** Un SIRET valide prime. Nom et adresse complète sont nécessaires pour un rapprochement sans identifiant, sous réserve des autres signaux. Similarité textuelle et domaine servent de corroboration. Les conflits issus d'une identité confirmée subsistent dans les observations.
+4. **PostgreSQL, SQLAlchemy et Alembic.** Une seule base pour recherches et tâches, avec checkpoints transactionnels. Les index usuels suffisent au premier périmètre. Évaluer `pg_trgm` sur les candidats à revue et PostGIS pour la couverture géographique locale à grande échelle, avec mesures et jeux annotés.
+5. **Scores déterministes.** Le score historique reste disponible aux consommateurs CLI. Les preuves observées alimentent séparément la qualité, l'opportunité du profil et la confiance. L'IA optionnelle reste consultative sur les cas incertains.
+6. **API et worker distincts.** PostgreSQL sert aussi de file initiale. Évaluer Redis seulement si les mesures montrent une contention ou si les besoins de planification dépassent le contrat actuel.
