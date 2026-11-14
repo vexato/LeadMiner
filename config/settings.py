@@ -1,82 +1,48 @@
-"""Central configuration for the LeadMiner scraper."""
+"""Configuration shared by the CLI, engine and source adapters."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
 class Settings:
-    """All tuneable parameters in one place — override via CLI or constructor kwargs."""
-
-    # ── Browser ───────────────────────────────────────────────────────────────
     headless: bool = True
-    browser_timeout: int = 30_000        # ms
-    page_load_timeout: int = 15_000      # ms
-
-    # ── Google Maps ───────────────────────────────────────────────────────────
-    maps_base_url: str = "https://www.google.com/maps/search/"
-    scroll_count: int = 6                # times to scroll the results panel
-    scroll_delay: float = 2.0            # seconds between scrolls
-    result_click_delay: float = 1.5      # seconds to wait after navigating to a place
-
-    # ── Rate limiting (seconds) ───────────────────────────────────────────────
+    browser_timeout: int = 30_000
+    scroll_count: int = 6
+    scroll_delay: float = 2.0
+    result_click_delay: float = 1.5
     min_delay: float = 1.0
     max_delay: float = 3.0
-    website_min_delay: float = 0.5
-    website_max_delay: float = 1.5
 
-    # ── Retry ─────────────────────────────────────────────────────────────────
-    max_retries: int = 3
-    retry_backoff: float = 2.0           # exponential backoff multiplier
-
-    # ── Website scraping ──────────────────────────────────────────────────────
-    contact_paths: list[str] = field(default_factory=lambda: [
-        "/contact",
-        "/contact-us",
-        "/contactez-nous",
-        "/nous-contacter",
-        "/about",
-        "/about-us",
-        "/a-propos",
-        "/qui-sommes-nous",
-        "/equipe",
-        "/team",
-        "/our-team",
-        "/mentions-legales",
-        "/legal",
-        "/legal-notice",
-        "/impressum",
-        "/imprint",
-        "/coordonnees",
-        "/infos",
-    ])
-    website_timeout: int = 10            # seconds per HTTP request
-
-    # ── Description ───────────────────────────────────────────────────────────
+    website_timeout: float = 6
+    website_budget: float = 20
+    website_max_requests: int = 8
+    website_max_bytes: int = 750_000
+    contact_paths: tuple[str, ...] = ("/contact", "/mentions-legales")
     max_description_length: int = 300
-
-    # ── Output ────────────────────────────────────────────────────────────────
-    output_dir: str = "results"
-    output_format: str = "both"          # "json" | "csv" | "both"
-
-    # ── Concurrency ───────────────────────────────────────────────────────────
     max_concurrent_website_scrapers: int = 5
+    max_concurrent_sources: int = 3
+    source_timeout: int = 240
+    legacy_proxy: str | None = None
 
-    # ── Quality filters ───────────────────────────────────────────────────────
-    filter_junk: bool = True             # remove aggregator/directory results
-    filter_empty: bool = True            # remove records with no enrichment data
-    min_score: int = 0                   # keep only companies with score >= this
+    output_dir: str = "results"
+    output_format: str = "both"
+    filter_junk: bool = True
+    filter_empty: bool = True
+    min_score: int = 0
 
-    # ── Enrichment ────────────────────────────────────────────────────────────
-    address_backfill: bool = True        # re-query Google Maps for missing addresses
+    def __post_init__(self) -> None:
+        if not 1 <= self.max_concurrent_website_scrapers <= 20:
+            raise ValueError("Website concurrency must be between 1 and 20")
+        if self.max_concurrent_sources < 1 or self.scroll_count < 0:
+            raise ValueError("Invalid source concurrency or scroll count")
+        if not str(self.output_dir).strip() or self.output_format not in {"json", "csv", "both"}:
+            raise ValueError("Invalid export directory or format")
 
-    # ── Stealth: realistic user-agent pool ────────────────────────────────────
-    user_agents: list[str] = field(default_factory=lambda: [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) "
-        "Gecko/20100101 Firefox/121.0",
-    ])
+
+def database_url() -> str | None:
+    import os
+
+    if filename := os.getenv("DATABASE_URL_FILE"):
+        return Path(filename).read_text(encoding="utf-8").strip()
+    return os.getenv("DATABASE_URL") or None

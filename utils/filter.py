@@ -6,11 +6,9 @@ aggregator websites, SEO list articles, or records with no
 useful enrichment data at all.
 """
 
-import urllib.parse
-from typing import Optional
-
 from models.company import Company
 from utils.logger import setup_logger
+from utils.validators import extract_domain
 
 logger = setup_logger(__name__)
 
@@ -71,17 +69,8 @@ _JUNK_NAME_WORDS: frozenset[str] = frozenset([
 ])
 
 
-def _domain(url: Optional[str]) -> Optional[str]:
-    if not url:
-        return None
-    try:
-        return urllib.parse.urlparse(url).netloc.lstrip("www.").lower() or None
-    except Exception:
-        return None
-
-
 def _is_junk_domain(company: Company) -> bool:
-    d = _domain(company.website)
+    d = extract_domain(company.website)
     if not d:
         return False
     return any(d == junk or d.endswith("." + junk) for junk in _JUNK_DOMAINS)
@@ -95,7 +84,8 @@ def _is_junk_name(company: Company) -> bool:
 def _is_empty_record(company: Company) -> bool:
     """True when the record has no useful data beyond a name (no website, address, or enrichment)."""
     return (
-        not company.website
+        not company.siret
+        and not company.website
         and not company.address
         and not company.email
         and not company.contact_page
@@ -128,14 +118,11 @@ def apply_junk_filter(
     dropped_domain = dropped_name = dropped_empty = 0
 
     for c in companies:
-        if _is_junk_domain(c):
-            logger.debug(f"Filter[domain]: dropped '{c.company_name}' ({c.website})")
+        if not c.siret and _is_junk_domain(c):
             dropped_domain += 1
-        elif _is_junk_name(c):
-            logger.debug(f"Filter[name]: dropped '{c.company_name}'")
+        elif not c.siret and _is_junk_name(c):
             dropped_name += 1
         elif filter_empty and _is_empty_record(c):
-            logger.debug(f"Filter[empty]: dropped '{c.company_name}'")
             dropped_empty += 1
         else:
             kept.append(c)

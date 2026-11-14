@@ -2,8 +2,7 @@
 
 import re
 from typing import Optional
-from urllib.parse import urlparse
-
+from urllib.parse import urlsplit
 
 EMAIL_REGEX = re.compile(
     r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}",
@@ -80,15 +79,6 @@ _FREE_EMAIL_PROVIDERS = frozenset([
 _IMAGE_EXTS = (".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico")
 
 
-def is_valid_url(url: str) -> bool:
-    """Return True if *url* is an absolute HTTP(S) URL."""
-    try:
-        p = urlparse(url)
-        return p.scheme in ("http", "https") and bool(p.netloc)
-    except Exception:
-        return False
-
-
 def is_valid_email(email: str) -> bool:
     """Return True if *email* passes format checks and is not an obvious placeholder."""
     if not EMAIL_REGEX.fullmatch(email):
@@ -126,9 +116,13 @@ def is_free_email_provider(email: str) -> bool:
     return domain in _FREE_EMAIL_PROVIDERS
 
 
-def extract_domain(url: str) -> Optional[str]:
-    """Return the netloc of *url*, or None on failure."""
+def extract_domain(url: str | None) -> Optional[str]:
+    """Return the normalized hostname, stripping exactly one www prefix."""
+    if not url:
+        return None
     try:
-        return urlparse(url).netloc or None
-    except Exception:
+        parsed = urlsplit(url if "://" in url else "//" + url, allow_fragments=True)
+        host = parsed.hostname
+        return host.rstrip(".").removeprefix("www.") if host else None
+    except ValueError:
         return None

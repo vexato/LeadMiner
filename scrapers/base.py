@@ -39,6 +39,12 @@ class BaseSource(ABC):
             limit:    Maximum number of results to return.
 
         Returns:
-            List of Company objects — never raises, returns [] on error.
+            List of Company objects. Raise SourceError for a provider failure.
         """
         ...
+
+
+class SourceError(RuntimeError):
+    def __init__(self, code: str, partial: list[Company] | None = None):
+        super().__init__(code)
+        self.partial = partial or []

@@ -1,12 +1,4 @@
-"""
-Google Search scraper — uses Playwright with stealth setup.
-
-Extracts organic results: title → company name, URL → website,
-snippet → description. Known aggregator domains are filtered out.
-"""
-
 import asyncio
-import random
 import urllib.parse
 from typing import Optional
 
@@ -14,9 +6,10 @@ from playwright.async_api import Browser, BrowserContext, Page, async_playwright
 
 from config.settings import Settings
 from models.company import Company
-from scrapers.base import BaseSource
+from scrapers.base import BaseSource, SourceError
 from utils.helpers import async_random_delay
 from utils.logger import setup_logger
+from utils.validators import extract_domain
 
 logger = setup_logger(__name__)
 
@@ -56,14 +49,10 @@ class GoogleSearchScraper(BaseSource):
             browser = await self._launch(pw)
             context = await self._context(browser)
             page = await context.new_page()
-            await page.add_init_script(
-                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
-            )
             try:
                 companies = await self._run(page, search_term, limit)
             except Exception as exc:
-                logger.error(f"Google Search failed: {exc}")
-                companies = []
+                raise SourceError("google_browser_error") from exc
             finally:
                 await browser.close()
 
@@ -86,7 +75,6 @@ class GoogleSearchScraper(BaseSource):
 
     async def _context(self, browser: Browser) -> BrowserContext:
         return await browser.new_context(
-            user_agent=random.choice(self.settings.user_agents),
             viewport={"width": 1366, "height": 768},
             locale="fr-FR",
             timezone_id="Europe/Paris",
@@ -210,10 +198,12 @@ class GoogleSearchScraper(BaseSource):
         if not href.startswith("http") or not title:
             return None
 
-        domain = urllib.parse.urlparse(href).netloc.lstrip("www.")
+        domain = extract_domain(href)
+        if not domain:
+            return None
 
         # Skip aggregators
-        if any(domain.endswith(d) for d in _SKIP_DOMAINS):
+        if any((domain == d or domain.endswith("." + d)) for d in _SKIP_DOMAINS):
             return None
 
         # One result per domain

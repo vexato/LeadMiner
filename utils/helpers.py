@@ -83,6 +83,6 @@ def async_retry(
 def normalize_url(url: str) -> str:
     """Ensure a URL has a scheme; default to https."""
     url = url.strip()
-    if url and not url.startswith(("http://", "https://")):
+    if url and "://" not in url:
         return f"https://{url}"
     return url

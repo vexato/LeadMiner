@@ -1,21 +1,12 @@
-"""
-Pages Jaunes scraper — uses Playwright (same stealth setup as Maps scraper).
-
-aiohttp alone gets blocked by Cloudflare on pagesjaunes.fr; Playwright
-handles cookies, JS rendering, and consent overlays automatically.
-"""
-
 import asyncio
-import random
 import unicodedata
 import urllib.parse
-from typing import Optional
 
 from playwright.async_api import Browser, BrowserContext, Page, async_playwright
 
 from config.settings import Settings
 from models.company import Company
-from scrapers.base import BaseSource
+from scrapers.base import BaseSource, SourceError
 from utils.helpers import async_random_delay
 from utils.logger import setup_logger
 
@@ -55,14 +46,10 @@ class PagesJaunesScraper(BaseSource):
             browser = await self._launch(pw)
             context = await self._context(browser)
             page = await context.new_page()
-            await page.add_init_script(
-                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
-            )
             try:
                 companies = await self._run(page, query, location, limit)
             except Exception as exc:
-                logger.error(f"Pages Jaunes failed: {exc}")
-                companies = []
+                raise SourceError("pj_browser_error") from exc
             finally:
                 await browser.close()
 
@@ -85,7 +72,6 @@ class PagesJaunesScraper(BaseSource):
 
     async def _context(self, browser: Browser) -> BrowserContext:
         return await browser.new_context(
-            user_agent=random.choice(self.settings.user_agents),
             viewport={"width": 1366, "height": 768},
             locale="fr-FR",
             timezone_id="Europe/Paris",
@@ -120,8 +106,7 @@ class PagesJaunesScraper(BaseSource):
             logger.debug(f"PJ search page {pj_page}: title='{title}'")
 
             if any(kw in title.lower() for kw in ("just a moment", "access denied", "403", "captcha")):
-                logger.warning(f"PJ: bot challenge detected — aborting")
-                break
+                raise SourceError("pj_access_restricted")
 
             batch = await self._scrape_search_page(page)
             if not batch:
@@ -137,22 +122,8 @@ class PagesJaunesScraper(BaseSource):
 
         raw_cards = raw_cards[:limit]
 
-        # ── Step 2: Google search per company to find their website ──────────
-        logger.info(f"PJ: {len(raw_cards)} companies — searching Google for websites…")
-        await self._handle_google_consent(page)
-
-        companies: list[Company] = []
-        for i, card in enumerate(raw_cards):
-            website = await self._google_find_website(page, card["name"], location)
-            logger.debug(f"PJ+Google {i + 1}/{len(raw_cards)}: '{card['name']}' → {website or 'not found'}")
-            companies.append(Company(
-                company_name=card["name"],
-                website=website,
-                address=card.get("address") or None,
-            ))
-            await async_random_delay(0.8, 1.5)
-
-        return companies
+        return [Company(company_name=card["name"], address=card.get("address"))
+                for card in raw_cards]
 
     async def _dismiss_consent(self, page: Page) -> None:
         """Dismiss cookie/consent overlay if present."""
@@ -173,82 +144,13 @@ class PagesJaunesScraper(BaseSource):
 
     # ── Google website discovery ───────────────────────────────────────────────
 
-    async def _handle_google_consent(self, page: Page) -> None:
-        """Visit Google once to dismiss the consent popup for the session."""
-        try:
-            await page.goto("https://www.google.fr/", wait_until="domcontentloaded", timeout=15_000)
-            await asyncio.sleep(1.5)
-            for sel in (
-                "#L2AGLb",
-                'button:has-text("Tout accepter")',
-                'button:has-text("Accept all")',
-                '[aria-label="Tout accepter"]',
-            ):
-                try:
-                    btn = page.locator(sel).first
-                    if await btn.is_visible(timeout=2_000):
-                        await btn.click()
-                        await asyncio.sleep(0.5)
-                        return
-                except Exception:
-                    continue
-        except Exception as exc:
-            logger.debug(f"Google consent handling failed: {exc}")
-
-    async def _google_find_website(self, page: Page, company_name: str, location: str) -> Optional[str]:
-        """
-        Search Google for ``company_name location`` and return the first
-        organic result that is not a directory or aggregator.
-        """
-        _SKIP = frozenset([
-            "pagesjaunes", "societe.com", "pappers", "infogreffe", "verif.com",
-            "linkedin.com", "facebook.com", "instagram.com", "twitter.com",
-            "youtube.com", "wikipedia.org", "google.", "sortlist", "clutch.co",
-            "malt.fr", "leboncoin", "indeed.fr", "annuaire",
-            "mappy.com", "fr.mappy.com", "tripadvisor", "yelp.",
-        ])
-
-        query = urllib.parse.quote_plus(f"{company_name} {location}")
-        search_url = f"https://www.google.fr/search?q={query}&num=5&hl=fr"
-
-        try:
-            await page.goto(search_url, wait_until="domcontentloaded", timeout=15_000)
-            await asyncio.sleep(0.6)
-
-            hrefs: list[str] = await page.evaluate("""
-                () => {
-                    const hrefs = [];
-                    document.querySelectorAll('h3').forEach(h3 => {
-                        let a = h3.closest('a');
-                        if (!a) a = h3.parentElement && h3.parentElement.closest('a');
-                        if (!a) return;
-                        const href = a.href;
-                        if (!href || !href.startsWith('http')) return;
-                        if (href.includes('google.') && !href.includes('url=')) return;
-                        hrefs.push(href);
-                    });
-                    return hrefs;
-                }
-            """) or []
-
-            for href in hrefs:
-                if not any(d in href for d in _SKIP):
-                    return href
-            return None
-
-        except Exception as exc:
-            logger.debug(f"Google website search failed for '{company_name}': {exc}")
-            return None
-
-    # ── Extraction ────────────────────────────────────────────────────────────
-
     async def _scrape_search_page(self, page: Page) -> list[dict]:
         """
         Extract raw card data from a PJ search results page.
         Returns list of {name, address} dicts.
         """
         try:
-            raw: list[dict] = await page.evaluate("""
+            raw: list[dict] = await page.evaluate(r"""
                 () => {
                     const results = [];
                     const seen = new Set();
@@ -256,8 +158,8 @@ class PagesJaunesScraper(BaseSource):
                         const heading = el.querySelector('h2 a, h3 a, h2, h3');
                         if (!heading) return;
                         const name = heading.innerText.trim();
-                        if (!name || name.length < 2 || seen.has(name)) return;
-                        seen.add(name);
+                        if (!name || name.length < 2) return;
+
 
                         const addrEl = (
                             el.querySelector('[class*="adresse"]') ||
@@ -273,6 +175,9 @@ class PagesJaunesScraper(BaseSource):
                             address = clone.innerText.replace(/\s+/g, ' ').trim() || null;
                         }
 
+                        const key = JSON.stringify([name, address]);
+                        if (seen.has(key)) return;
+                        seen.add(key);
                         results.push({ name, address });
                     });
                     return results;

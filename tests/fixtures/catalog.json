@@ -1,0 +1,28 @@
+[
+  {
+    "company_name": "Atelier des Quais",
+    "siret": "11111111100010",
+    "address": "12 rue des Quais 33000 Bordeaux",
+    "postal_code": "33000",
+    "activity": "coiffure",
+    "activity_code": "96.02A",
+    "location": "Bordeaux"
+  },
+  {
+    "company_name": "Atelier des Quais",
+    "siret": "11111111100028",
+    "address": "14 rue des Quais 33000 Bordeaux",
+    "postal_code": "33000",
+    "activity": "coiffure",
+    "activity_code": "96.02A",
+    "location": "Bordeaux"
+  },
+  {
+    "company_name": "Atelier des Quais SAS",
+    "address": "12 rue des Quais, 33000 Bordeaux",
+    "postal_code": "33000",
+    "activity": "coiffure",
+    "activity_code": "96.02A",
+    "location": "Bordeaux"
+  }
+]

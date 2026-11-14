@@ -60,7 +60,7 @@ class TextExtractor:
 
             # 1. Meta description (usually the best single-line summary)
             meta = self._meta_description(soup)
-            if meta and len(meta) > 20:
+            if meta and len(meta) > 20 and self._clean(meta):
                 return self._truncate(meta)
 
             # 2. Identified content blocks
@@ -112,4 +112,4 @@ class TextExtractor:
         if len(text) <= self.max_length:
             return text
         cut = text[: self.max_length].rsplit(" ", 1)[0]
-        return cut.rstrip(".,;:") + "…"
+        return cut[: self.max_length - 1].rstrip(".,;:") + "…"

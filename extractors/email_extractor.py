@@ -20,8 +20,8 @@ logger = setup_logger(__name__)
 _OBFUSCATED_RE = re.compile(
     r"""
     ([a-zA-Z0-9._%+\-]+)                     # local-part
-    \s*(?:\[|\(|\{)?\s*(?:at|AT|At|arobase)\s*(?:\]|\)|\})?\s*
-    ([a-zA-Z0-9\-]+(?:\s*(?:\[|\(|\{)?\s*(?:dot|DOT|Dot|point)\s*(?:\]|\)|\})?\s*[a-zA-Z0-9\-]+)+)
+    (?:\s+(?:at|AT|At|arobase)\s+|\s*[\[({]\s*(?:at|AT|At|arobase)\s*[\])}]\s*)
+    ([a-zA-Z0-9\-]+(?:(?:\s+(?:dot|DOT|Dot|point)\s+|\s*[\[({]\s*(?:dot|DOT|Dot|point)\s*[\])}]\s*)[a-zA-Z0-9\-]+)+)
     """,
     re.VERBOSE,
 )
@@ -39,7 +39,7 @@ def _deobfuscate(match: re.Match) -> Optional[str]:
     rest = match.group(2)
     # Normalise [dot]/(dot)/DOT/point → "."
     rest = re.sub(
-        r"\s*(?:\[|\(|\{)?\s*(?:dot|DOT|Dot|point)\s*(?:\]|\)|\})?\s*",
+        r"(?:\s+(?:dot|DOT|Dot|point)\s+|\s*[\[({]\s*(?:dot|DOT|Dot|point)\s*[\])}]\s*)",
         ".",
         rest,
     ).strip(".")
@@ -151,4 +151,3 @@ class EmailExtractor:
         if is_valid_email(email):
             self._seen.add(email)
             collector.append(email)
-            logger.debug(f"Found email: {email}")
