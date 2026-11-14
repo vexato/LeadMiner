@@ -1,0 +1,13 @@
+aiohttp>=3.13,<4
+alembic>=1.16,<2
+beautifulsoup4>=4.13,<5
+fastapi>=0.115,<1
+groq>=0.30,<2
+lxml>=5.4,<7
+playwright==1.65.2
+protego>=0.6.2,<1
+psycopg[binary]>=3.2,<4
+python-dotenv>=1.1,<2
+sqlalchemy>=2.0,<2.1
+uvicorn>=0.34,<1
+yarl>=1.18,<2

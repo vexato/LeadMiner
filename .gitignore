@@ -17,6 +17,7 @@ build/
 
 # Results / output files
 results/
+exports/
 
 # Playwright browsers
 playwright/
@@ -42,3 +43,8 @@ logs/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Local credentials and test caches
+.secrets/
+.pytest_cache/
+.ruff_cache/

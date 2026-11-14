@@ -2,37 +2,63 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
 
-jobs:
-  quality:
-    name: Quality (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+permissions:
+  contents: read
 
+jobs:
+  tests:
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]
-
+        python: ["3.11", "3.12"]
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: leadminer_test
+          POSTGRES_USER: leadminer
+          POSTGRES_PASSWORD: leadminer_ephemeral_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U leadminer -d leadminer_test"
+          --health-interval 2s --health-timeout 3s --health-retries 15
+    env:
+      LEADMINER_TEST_DATABASE_URL: postgresql+psycopg://leadminer:leadminer_ephemeral_ci@127.0.0.1:5432/leadminer_test
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python }}
           cache: pip
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Verify CLI help
-        run: python main.py --help
-
-      - name: Compile project
-        run: python -m compileall .
+          cache-dependency-path: requirements-dev.txt
+      - run: pip install --require-hashes -r requirements-dev.txt
+      - run: ruff check .
+      - run: python main.py --help
+      - run: python -m pytest -q
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -m 700 .secrets
+          secret="$(openssl rand -hex 24)"
+          install -m 644 /dev/null .secrets/db-password
+          install -m 644 /dev/null .secrets/db-url
+          printf '%s' "$secret" > .secrets/db-password
+          printf 'postgresql+psycopg://leadminer:%s@db:5432/leadminer' "$secret" > .secrets/db-url
+          docker compose config --quiet
+          docker compose build migrate
+          docker compose --profile api up --wait
+      - run: |
+          docker compose --profile cli run --rm cli python main.py --help
+          docker compose --profile cli run --rm -v "$PWD/tests/fixtures/catalog.json:/tmp/catalog.json:ro" cli \
+            python main.py -q coiffure -l Bordeaux -s catalog --catalog /tmp/catalog.json
+          curl --fail http://127.0.0.1:8000/health
+      - if: failure()
+        run: docker compose --profile api logs --no-color
+      - if: always()
+        run: docker compose --profile api down -v
